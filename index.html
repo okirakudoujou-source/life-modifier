@@ -1,0 +1,2708 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>人生モディファイア</title>
+
+
+    <style>
+
+        /* ========================================
+           全体
+        ======================================== */
+
+        body {
+            margin: 0;
+            background: #181818;
+            color: #eeeeee;
+            font-family: Arial, "Noto Sans JP", sans-serif;
+        }
+
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px 100px;
+        }
+
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+
+        /* ========================================
+           合計
+        ======================================== */
+
+        #score {
+            position: sticky;
+            top: 10px;
+            z-index: 10;
+            background: #252525;
+            border: 1px solid #444;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 35px;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+
+        /* ========================================
+           大分類
+        ======================================== */
+
+        .category-section {
+            margin-bottom: 55px;
+        }
+
+
+        .category-title {
+            font-size: 25px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #444444;
+        }
+
+
+        /* ========================================
+           大分類の色
+        ======================================== */
+
+        .category-brain .category-title {
+            color: #aaaaaa;
+        }
+
+
+        .category-body .category-title {
+            color: #aaaaaa;
+        }
+
+
+        .category-look .category-title {
+            color: #aaaaaa;
+        }
+
+
+        /* ========================================
+           BUFF / DEBUFF / NEUTRAL
+        ======================================== */
+
+        .type-section {
+            margin-bottom: 30px;
+        }
+
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+
+            .section-title::after {
+                content: "";
+                flex: 1;
+                height: 1px;
+                background: #444;
+            }
+
+
+        .buff-title {
+            color: #55cc77;
+        }
+
+
+        .debuff-title {
+            color: #ff5555;
+        }
+
+
+        .neutral-title {
+            color: #aaaaaa;
+        }
+
+
+        /* ========================================
+           モディファイア一覧
+        ======================================== */
+
+        .modifier-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+
+        /* ========================================
+           モディファイアカード
+        ======================================== */
+
+        .modifier {
+            background: #242424;
+            border: 1px solid #3d3d3d;
+            border-radius: 10px;
+            padding: 18px;
+            cursor: pointer;
+            transition: background-color 0.15s, border-color 0.15s, opacity 0.15s;
+        }
+
+
+            .modifier:hover {
+                background: #2d2d2d;
+                border-color: #666;
+            }
+
+
+            .modifier.selected {
+                background: #353535;
+                border-color: #aaaaaa;
+                box-shadow: 0 0 0 1px #aaaaaa;
+            }
+
+
+            /* ========================================
+           競合している項目
+        ======================================== */
+
+            .modifier.conflict-disabled {
+                opacity: 0.28;
+                cursor: not-allowed;
+            }
+
+
+                .modifier.conflict-disabled:hover {
+                    background: #242424;
+                    border-color: #3d3d3d;
+                }
+
+
+        /* ========================================
+           カード内部
+        ======================================== */
+
+        .modifier-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+
+        .modifier-name {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+
+        .modifier-score {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+
+        /* ========================================
+           数値
+
+           BUFF  = マイナス = 緑
+           DEBUFF = プラス = 赤
+        ======================================== */
+
+        .positive {
+            color: #55cc77;
+        }
+
+
+        .negative {
+            color: #ff5555;
+        }
+
+
+        .zero {
+            color: #aaaaaa;
+        }
+
+
+        .description {
+            color: #999999;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+
+        /* ========================================
+           確定ボタン
+        ======================================== */
+
+        #confirmButton {
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            padding: 18px;
+            background: #444444;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+
+            #confirmButton:hover {
+                background: #555555;
+            }
+
+
+            #confirmButton:disabled {
+                background: #292929;
+                color: #666666;
+                cursor: not-allowed;
+            }
+
+
+        /* ========================================
+           人物一覧
+        ======================================== */
+
+        #peopleLink {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #888888;
+            text-decoration: none;
+        }
+
+
+            #peopleLink:hover {
+                color: #ffffff;
+            }
+
+
+        /* ========================================
+           ランダム生成
+        ======================================== */
+
+        .random-section {
+            margin-top: 80px;
+            padding-top: 25px;
+            padding-bottom: 80px;
+            border-top: 1px solid #292929;
+        }
+
+
+        .random-title {
+            color: #666666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+
+        #randomButton {
+            display: block;
+            margin: 0;
+            padding: 5px 10px;
+            background: transparent;
+            color: #555555;
+            border: 1px solid #333333;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+
+            #randomButton:hover {
+                background: #242424;
+                color: #888888;
+                border-color: #444444;
+            }
+
+
+        .random-description {
+            margin-top: 30px;
+            margin-bottom: 12px;
+            color: #555555;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+
+        /* ========================================
+           スマホ
+        ======================================== */
+
+        @media (max-width: 600px) {
+
+            .container {
+                padding: 25px 15px 80px;
+            }
+
+
+            .modifier-list {
+                grid-template-columns: 1fr;
+            }
+
+
+            #score {
+                font-size: 24px;
+            }
+
+
+            .category-title {
+                font-size: 22px;
+            }
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="container">
+
+
+        <h1>
+            人生モディファイア
+        </h1>
+
+
+        <div id="score">
+            合計：0
+        </div>
+
+
+        <!-- ========================================
+             頭脳
+        ======================================== -->
+
+        <section class="category-section category-brain">
+
+            <div class="category-title">
+                頭脳
+            </div>
+
+
+            <!-- BUFF -->
+
+            <section class="type-section">
+
+                <div class="section-title buff-title">
+                    BUFF
+                </div>
+
+
+                <div id="brainBuff"
+                     class="modifier-list">
+                </div>
+
+            </section>
+
+
+            <!-- DEBUFF -->
+
+            <section class="type-section">
+
+                <div class="section-title debuff-title">
+                    DEBUFF
+                </div>
+
+
+                <div id="brainDebuff"
+                     class="modifier-list">
+                </div>
+
+            </section>
+
+
+            <!-- NEUTRAL -->
+
+            <section class="type-section"
+                     id="brainNeutralSection">
+
+                <div class="section-title neutral-title">
+                    NEUTRAL
+                </div>
+
+
+                <div id="brainNeutral"
+                     class="modifier-list">
+                </div>
+
+            </section>
+
+        </section>
+
+
+
+        <!-- ========================================
+             身体
+        ======================================== -->
+
+        <section class="category-section category-body">
+
+            <div class="category-title">
+                身体
+            </div>
+
+
+            <!-- BUFF -->
+
+            <section class="type-section">
+
+                <div class="section-title buff-title">
+                    BUFF
+                </div>
+
+
+                <div id="bodyBuff"
+                     class="modifier-list">
+                </div>
+
+            </section>
+
+
+            <!-- DEBUFF -->
+
+            <section class="type-section">
+
+                <div class="section-title debuff-title">
+                    DEBUFF
+                </div>
+
+
+                <div id="bodyDebuff"
+                     class="modifier-list">
+                </div>
+
+            </section>
+
+
+            <!-- NEUTRAL -->
+
+            <section class="type-section"
+                     id="bodyNeutralSection">
+
+                <div class="section-title neutral-title">
+                    NEUTRAL
+                </div>
+
+
+                <div id="bodyNeutral"
+                     class="modifier-list">
+                </div>
+
+            </section>
+
+        </section>
+
+
+
+        <!-- ========================================
+             ルックス
+        ======================================== -->
+
+        <section class="category-section category-look">
+
+            <div class="category-title">
+                ルックス
+            </div>
+
+
+            <!-- BUFF -->
+
+            <section class="type-section">
+
+                <div class="section-title buff-title">
+                    BUFF
+                </div>
+
+
+                <div id="lookBuff"
+                     class="modifier-list">
+                </div>
+
+            </section>
+
+
+            <!-- DEBUFF -->
+
+            <section class="type-section">
+
+                <div class="section-title debuff-title">
+                    DEBUFF
+                </div>
+
+
+                <div id="lookDebuff"
+                     class="modifier-list">
+                </div>
+
+            </section>
+
+
+            <!-- NEUTRAL -->
+
+            <section class="type-section"
+                     id="lookNeutralSection">
+
+                <div class="section-title neutral-title">
+                    NEUTRAL
+                </div>
+
+
+                <div id="lookNeutral"
+                     class="modifier-list">
+                </div>
+
+            </section>
+
+        </section>
+
+
+
+        <!-- ========================================
+             確定
+        ======================================== -->
+
+        <button id="confirmButton"
+                disabled>
+
+            合計を0にすると確定できます
+
+        </button>
+
+
+
+        <a id="peopleLink"
+           href="people.html">
+
+            今まで作った人を見る
+
+        </a>
+
+
+
+        <!-- ========================================
+             ランダム生成
+        ======================================== -->
+
+        <section class="random-section">
+
+            <button id="randomButton">
+                ランダム生成
+            </button>
+
+
+            <div class="random-description">
+
+                項目と個数がすべて完全ランダムに選ばれます。<br>
+                合計の値も一切無視します。
+
+            </div>
+
+        </section>
+
+
+    </div>
+
+
+
+    <script>
+
+
+        /* ==================================================
+        モディファイア一覧
+        ================================================== */
+
+        const modifiers = [
+
+
+        /* ==================================================
+        頭脳
+        ================================================== */
+
+
+       
+
+        {
+        name: "高IQ",
+        score: -8,
+        category: "brain",
+        description:
+        "WAIS-IVの4項目の値が150になります"
+        },
+
+
+        {
+        name: "記憶力抜群",
+        score: -3,
+        category: "brain",
+        description:
+        "一度見聞きした情報を、ほぼ正確に長期間保持できます"
+        },
+
+
+        {
+        name: "要領良し",
+        score: -2,
+        category: "brain",
+        description:
+        "無駄な努力をせず、物事のコツの掴み方を直感的に理解できます"
+        },
+
+
+        {
+        name: "天才",
+        score: -12,
+        category: "brain",
+        description:
+        "どんな才能を持つかはランダムですが、世界を驚かせるような天才になります"
+        },
+
+
+        {
+        name: "ギフテッド",
+        score: -6,
+        category: "brain",
+        description:
+        "特定の分野において生まれつき突出した才能を持ち、同年代の人とは比較にならないほど高い能力を発揮します"
+        },
+
+
+        {
+        name: "コミュ強",
+        score: -2,
+        category: "brain",
+        description:
+        "初対面の相手とも自然に会話でき、好意を持たれやすくなります"
+        },
+
+        {
+        name: "優れた学習能力",
+        score: -2,
+        category: "brain",
+        description:
+        "一を聞いて百を知るとはあなたのことです。一度勉強しただけで大抵のことは理解してしまいます"
+        },
+
+
+        {
+        name: "幸運",
+        score: -2,
+        category: "brain",
+        description:
+        "何かしら得をする機会がはるかに増えます"
+        },
+
+
+        {
+        name: "豪運",
+        score: -5,
+        category: "brain",
+        description:
+        "幸運に恵まれる機会が極端に多く、人生を大きく変えるほどの幸運に遭遇することがあります"
+        },
+
+
+        
+
+
+        {
+        name: "コミュ障",
+        score: 2,
+        category: "brain",
+        description:
+        "初対面の相手との会話が苦手で、意図せず相手に悪い印象を与えやすくなります"
+        },
+
+
+        {
+        name: "物覚えが悪い",
+        score: 3,
+        category: "brain",
+        description:
+        "一度見聞きした情報を忘れやすく、覚えるまでに何度も繰り返す必要があります"
+        },
+
+
+        {
+        name: "要領が悪い",
+        score: 2,
+        category: "brain",
+        description:
+        "物事のコツを掴むのが苦手で、必要以上の努力や時間をかけてしまいます"
+        },
+
+        {
+        name: "劣った学習能力",
+        score: 2,
+        category: "brain",
+        description:
+        "新しい知識や技能を身につけるのに時間がかかり、他の人なら簡単に理解できる内容でも、何度も繰り返し学習する必要があります"
+        },
+
+
+        {
+        name: "不運",
+        score: 2,
+        category: "brain",
+        description:
+        "なぜか損をする機会が多く、ちょっとした不幸に遭遇しやすくなります"
+        },
+
+
+        {
+        name: "凶運",
+        score: 5,
+        category: "brain",
+        description:
+        "人生を大きく左右するほどの不運に見舞われます"
+        },
+
+
+        {
+        name: "知的障害",
+        score: 8,
+        category: "brain",
+        description:
+        "日常生活に支障をきたす、何かしらの知的障害を持つことになります（ADHD、ASD、低IQ）"
+        },
+
+
+
+        /* ==================================================
+        身体
+        ================================================== */
+         {
+ name: "器用",
+ score: -1,
+ category: "body",
+ description:
+ "繊細な作業をそつなくこなします"
+ },
+        {
+name: "不器用",
+score: 1,
+category: "body",
+description:
+"細かい作業がストレスに感じるでしょう"
+},
+
+        {
+        name: "頑健",
+        score: -2,
+        category: "body",
+        description:
+        "切り傷から骨折まで、あらゆるけがの治りが早くなり、多少の無理にも耐えます"
+        },
+
+
+        {
+        name: "超免疫",
+        score: -3,
+        category: "body",
+        description:
+        "病気や感染症になりにくく、病気になっても回復が早くなります"
+        },
+
+
+        {
+        name: "不眠耐性",
+        score: -3,
+        category: "body",
+        description:
+        "睡眠時間が短くなり、不眠によるパフォーマンス低下が少なくなります"
+        },
+
+
+        {
+        name: "運動神経抜群",
+        score: -2,
+        category: "body",
+        description:
+        "身体の動かし方が上手く、スポーツや運動をすぐに習得できます"
+        },
+
+
+        {
+        name: "代謝良好",
+        score: -1,
+        category: "body",
+        description:
+        "食事から得たエネルギーを効率よく消費でき、疲れも残りにくい体質です"
+        },
+
+
+        {
+        name: "柔軟",
+        score: -1,
+        category: "body",
+        description:
+        "関節が柔らかく、身体を大きく動かす動作や柔軟性を要求される姿勢を難なくこなせます"
+        },
+
+
+        {
+        name: "平衡感覚",
+        score: -1,
+        category: "body",
+        description:
+        "身体の傾きや重心を正確に把握でき、足場の悪い場所でも転びにくくなります"
+        },
+
+
+        {
+        name: "反射神経",
+        score: -2,
+        category: "body",
+        description:
+        "目や身体が刺激に素早く反応し、咄嗟の動作を非常に速く行えます"
+        },
+
+
+        {
+        name: "体幹強固",
+        score: -1,
+        category: "body",
+        description:
+        "身体の軸が安定しており、姿勢を崩しにくく長時間安定した姿勢を維持できます"
+        },
+
+
+        {
+        name: "握力強",
+        score: -1,
+        category: "body",
+        description:
+        "手や指の力が強く、物を強く握ったり掴んだりする能力に優れています"
+        },
+
+
+        {
+        name: "肌が強い",
+        score: -1,
+        category: "body",
+        description:
+        "肌荒れや乾燥が起こりにくく、多少の刺激では肌の状態が崩れません"
+        },
+
+
+        {
+        name: "汗をかきにくい",
+        score: -1,
+        category: "body",
+        description:
+        "暑い環境でも汗をかきにくく、汗による不快感や衣服の濡れを抑えられます"
+        },
+
+
+        {
+        name: "暑さ耐性",
+        score: -1,
+        category: "body",
+        description:
+        "高温の環境でも身体への負担が少なく、暑さによる不快感を感じにくくなります"
+        },
+
+
+        {
+        name: "寒さ耐性",
+        score: -1,
+        category: "body",
+        description:
+        "低温の環境でも身体への負担が少なく、寒さによる不快感を感じにくくなります"
+        },
+
+
+        {
+        name: "乗り物酔い耐性",
+        score: -1,
+        category: "body",
+        description:
+        "車や船などの揺れに強く、長時間の移動でも乗り物酔いを起こしにくくなります"
+        },
+
+
+        {
+        name: "高所耐性",
+        score: -1,
+        category: "body",
+        description:
+        "高い場所でも身体がすくみにくく、足場の不安定な高所でも平静に身体を動かせます"
+        },
+
+
+        {
+        name: "体力お化け",
+        score: -2,
+        category: "body",
+        description:
+        "呼吸器の能力に優れ、長時間の運動や息を止める必要がある場面でも高い持久力を発揮できます"
+        },
+
+
+        {
+        name: "消化能力",
+        score: -1,
+        category: "body",
+        description:
+        "胃腸が丈夫で、多少食べ過ぎたり食事の内容が偏ったりしても胃腸の調子を崩しにくくなります"
+        },
+
+
+        {
+        name: "食欲安定",
+        score: -1,
+        category: "body",
+        description:
+        "空腹や満腹による身体への影響が少なく、食事の間隔が多少変わっても体調を崩しにくくなります"
+        },
+
+
+        {
+        name: "虫歯耐性",
+        score: -2,
+        category: "body",
+        description:
+        "虫歯になりにくい歯質を持ち、歯磨きを怠っても虫歯が発生しにくくなります"
+        },
+
+
+       
+
+
+        {
+        name: "虚弱",
+        score: 2,
+        category: "body",
+        description:
+        "切り傷や打撲などのけがが治りにくく、少し無理をしただけでも体調を崩しやすくなります"
+        },
+
+
+        {
+        name: "免疫不全",
+        score: 3,
+        category: "body",
+        description:
+        "病気や感染症にかかりやすく、一度病気になると治るまでに時間がかかります"
+        },
+
+
+        {
+        name: "睡眠弱耐性",
+        score: 3,
+        category: "body",
+        description:
+        "十分な睡眠を取らないとすぐに集中力や判断力が低下し、睡眠不足の影響を強く受けます"
+        },
+
+
+        {
+        name: "運動音痴",
+        score: 2,
+        category: "body",
+        description:
+        "身体の動かし方が苦手で、スポーツや運動の習得に人より多くの時間がかかります"
+        },
+
+
+        {
+        name: "代謝不良",
+        score: 1,
+        category: "body",
+        description:
+        "食事から得たエネルギーを効率よく消費できず、太りやすく疲れも残りやすい体質です"
+        },
+
+
+        {
+        name: "偏食家",
+        score: 4,
+        category: "body",
+        description:
+        "特定のものしか食べられなくなります"
+        },
+
+
+        {
+        name: "体が硬い",
+        score: 1,
+        category: "body",
+        description:
+        "関節が硬く、身体を大きく動かす動作や柔軟性を要求される姿勢が苦手です"
+        },
+
+
+        {
+        name: "バランス音痴",
+        score: 1,
+        category: "body",
+        description:
+        "身体の重心を保つのが苦手で、段差や不安定な足場で転びやすくなります"
+        },
+
+
+        {
+        name: "反応が遅い",
+        score: 2,
+        category: "body",
+        description:
+        "外部からの刺激に対する身体の反応が遅く、咄嗟の動作が苦手です"
+        },
+
+
+        {
+        name: "体幹が弱い",
+        score: 1,
+        category: "body",
+        description:
+        "姿勢を維持するのが苦手で、長時間同じ姿勢を続けると身体が疲れやすくなります"
+        },
+
+
+        {
+        name: "握力が弱い",
+        score: 1,
+        category: "body",
+        description:
+        "手や指の力が弱く、重い物を握ったり強く掴んだりする動作が苦手です"
+        },
+
+
+        {
+        name: "肌が弱い",
+        score: 2,
+        category: "body",
+        description:
+        "乾燥や摩擦などの刺激に弱く、肌荒れを起こしやすい体質です"
+        },
+
+
+        {
+        name: "汗っかき",
+        score: 1,
+        category: "body",
+        description:
+        "少し暑いだけでも汗をかきやすく、衣服が濡れたり汗による不快感を感じやすくなります"
+        },
+
+
+        {
+        name: "暑がり",
+        score: 1,
+        category: "body",
+        description:
+        "暑い環境で身体への負担を受けやすく、すぐに不快感や疲労を感じます"
+        },
+
+
+        {
+        name: "冷え性",
+        score: 1,
+        category: "body",
+        description:
+        "寒い環境で身体への負担を受けやすく、すぐに身体が冷えてしまいます"
+        },
+
+
+        {
+        name: "乗り物酔い",
+        score: 1,
+        category: "body",
+        description:
+        "車や船などの揺れに弱く、移動するだけで気分が悪くなりやすい体質です"
+        },
+
+
+        {
+        name: "高所が苦手",
+        score: 1,
+        category: "body",
+        description:
+        "高い場所に立つと身体がこわばりやすく、足場の悪い高所で動きにくくなります"
+        },
+
+
+        {
+        name: "耳抜き下手",
+        score: 1,
+        category: "body",
+        description:
+        "気圧の変化に弱く、飛行機や水中などで耳に強い不快感を覚えやすくなります"
+        },
+
+
+        {
+        name: "極度の疲労",
+        score: 2,
+        category: "body",
+        description:
+        "呼吸器の能力が低く、軽い運動を行っただけですぐに疲れてしまいます"
+        },
+
+
+        {
+        name: "胃腸が弱い",
+        score: 1,
+        category: "body",
+        description:
+        "食事の内容や量の影響を受けやすく、食べ過ぎるとすぐに胃腸の調子を崩します"
+        },
+
+        {
+        name: "アレルギー体質",
+        score: 3,
+        category: "body",
+        description:
+        "通常の人と比べてアレルギー反応を起こす食べ物が多く、症状も重篤なものになります"
+        },
+
+        {
+name: "花粉症",
+score: 2,
+category: "body",
+description:
+"花粉に対する反応が過敏になり、常にくしゃみと鼻水に悩まされるでしょう"
+},
+     
+
+
+        {
+        name: "身体障害",
+        score: 8,
+        category: "body",
+        description:
+        "手帳2級に相当する何かしらの身体的障害を持つことになります　　（聴覚、視覚、上下肢 いずれかの機能不全）"
+        },
+
+
+
+        /* ==================================================
+        ルックス
+        ================================================== */
+         {
+ name: "無臭体質",
+ score: -2,
+ category: "look",
+ description:
+ "汗をかいても体臭がほとんどなく、運動後や暑い日でも嫌な匂いが発生しにくい体質です"
+ },
+
+        {
+        name: "美しい顔",
+        score: -3,
+        category: "look",
+        description:
+        "道行く人は思わず二度見してしまうでしょう"
+        },
+
+        {
+        name: "モデル体型",
+        score: -3,
+        category: "look",
+        description:
+        "身体全体のバランスが非常に整っており、どんな服を着ても見栄えのする体型になります"
+        },
+
+        {
+        name: "不格好",
+        score: 3,
+        category: "look",
+        description:
+        "身体全体の比率が悪く、服を着ても体型の欠点が目立ちやすくなります"
+        },
+
+        {
+        name: "美少年・美少女",
+        score: -3,
+        category: "look",
+        description:
+        "若々しく、中性的または少年少女らしい魅力を強く持った容姿になります"
+        },
+
+
+        {
+        name: "ものすごく美しい顔",
+        score: -6,
+        category: "look",
+        description:
+        "もはやあなたの顔は世界で通用するレベルに美しいです"
+        },
+
+
+        {
+        name: "ふさふさ",
+        score: -1,
+        category: "look",
+        description:
+        "歳をとっても決して禿げることはないでしょう"
+        },
+
+
+        {
+        name: "高身長",
+        score: -1,
+        category: "look",
+        description:
+        "180センチ以上は約束されます"
+        },
+
+
+        {
+        name: "小顔",
+        score: -1,
+        category: "look",
+        description:
+        "頭部が小さく、全身のスタイルが非常に整って見えます"
+        },
+
+
+        {
+        name: "歯並び良好",
+        score: -1,
+        category: "look",
+        description:
+        "歯並びが自然に整っており、歯の見た目も非常にきれいです"
+        },
+
+
+        {
+        name: "低身長",
+        score: 1,
+        category: "look",
+        description:
+        "身長が低く、成人しても150センチ台になる可能性があります"
+        },
+
+
+        {
+        name: "歯並びが悪い",
+        score: 1,
+        category: "look",
+        description:
+        "歯が不規則に並んでおり、見た目や口腔内の手入れに苦労します"
+        },
+        
+        {
+        name: "口臭が出やすい",
+        score: 1,
+        category: "look",
+        description:
+        "口腔内の状態によって口臭が発生しやすく、対策をしても気になりやすい体質です"
+        },
+
+           {
+   name: "体臭が強い",
+   score: 2,
+   category: "look",
+   description:
+   "汗をかくと独特の体臭が発生しやすく、入浴や制汗対策をしていても匂いが残りやすい体質です"
+   },
+        {
+        name: "醜い顔",
+        score: 3,
+        category: "look",
+        description:
+        "ニキビ跡、分厚い唇、ブタ鼻...おまけにパーツの配置も不格好です"
+        },
+
+
+        {
+        name: "ものすごく醜い顔",
+        score: 6,
+        category: "look",
+        description:
+        "あまりの醜さに吐き気を催す人さえいます"
+        },
+
+
+        {
+        name: "性豪",
+        score: 0,
+        category: "look",
+        description:
+        "あなたの性欲はとどまることを知りません"
+        },
+
+        {
+        name: "男",
+        score: 0,
+        category: "look",
+        description:
+        "男性として生まれます"
+        },
+
+        {
+        name: "女",
+        score: 0,
+        category: "look",
+        description:
+        "女性として生まれます"
+        }
+
+        ];
+
+
+
+        /* ==================================================
+        競合設定
+        ================================================== */
+
+        const conflicts = [
+
+        /* 容姿 */
+
+        ["男", "女"],
+
+        ["美しい顔", "醜い顔"],
+        ["美しい顔", "ものすごく醜い顔"],
+
+        ["ものすごく美しい顔", "醜い顔"],
+        ["ものすごく美しい顔", "ものすごく醜い顔"],
+
+        ["美しい顔", "ものすごく美しい顔"],
+        ["ものすごく醜い顔", "醜い顔"],
+        /* 器用 */
+
+        ["器用", "不器用"],
+
+
+        /* 頭脳 */
+
+        ["高IQ", "要領が悪い"],
+        ["高IQ", "物覚えが悪い"],
+        ["高IQ", "劣った学習能力"],
+        ["高IQ", "優れた学習能力"],
+
+
+        ["高IQ", "要領良し"],
+        ["高IQ", "記憶力抜群"],
+
+        ["モデル体型", "不格好"],
+        
+        
+
+        ["要領良し", "要領が悪い"],
+
+        ["優れた学習能力", "劣った学習能力"],
+
+
+        /* コミュニケーション */
+
+        ["コミュ強", "コミュ障"],
+
+
+        /* 身体 */
+
+        ["頑健", "虚弱"],
+        ["超免疫", "免疫不全"],
+        ["不眠耐性", "睡眠弱耐性"],
+        ["運動神経抜群", "運動音痴"],
+
+        ["柔軟", "体が硬い"],
+        ["平衡感覚", "バランス音痴"],
+        ["反射神経", "反応が遅い"],
+        ["体幹強固", "体幹が弱い"],
+        ["握力強", "握力が弱い"],
+
+        ["幸運", "不運"],
+        ["豪運", "凶運"],
+
+        ["豪運", "不運"],
+        ["幸運", "凶運"],
+
+        ["豪運", "幸運"],
+        ["不運", "凶運"],
+
+        ["代謝良好", "代謝不良"],
+
+        ["高身長", "低身長"],
+
+        ["歯並び良好", "歯並びが悪い"],
+
+        ["肌が強い", "肌が弱い"],
+
+        ["汗をかきにくい", "汗っかき"],
+
+        ["暑さ耐性", "暑がり"],
+        ["寒さ耐性", "冷え性"],
+
+        ["乗り物酔い耐性", "乗り物酔い"],
+
+        ["高所耐性", "高所が苦手"],
+
+        ["体力お化け", "極度の疲労"],
+
+        ["消化能力", "胃腸が弱い"],
+
+        
+
+        ["無臭体質", "体臭が強い"],
+        ["無臭体質", "口臭が出やすい"]
+
+        ];
+
+
+
+        /* ==================================================
+        才能
+        ================================================== */
+
+        const talents = [
+
+        {
+        name: "数学的才能",
+        description:
+        "数学や論理的な問題に対する理解力と直感が突出しています。"
+        },
+
+        {
+        name: "音楽的才能",
+        description:
+        "音程やリズムを正確に捉え、楽器や歌を驚異的な速度で習得できます。"
+        },
+
+        {
+        name: "絵画の才能",
+        description:
+        "色彩や構図を直感的に理解し、非常に優れた絵を描くことができます。"
+        },
+
+        {
+        name: "文章の才能",
+        description:
+        "言葉の扱いに優れ、人を惹きつける文章を自然に書くことができます。"
+        },
+
+        {
+        name: "プログラミングの才能",
+        description:
+        "プログラムの構造を直感的に理解し、複雑なシステムを素早く構築できます。"
+        },
+
+        {
+        name: "スポーツの才能",
+        description:
+        "身体能力を効率よく活かす方法を理解し、競技を極める速度が異常に速くなります。"
+        },
+
+        {
+        name: "空間認識の才能",
+        description:
+        "物体の位置や形状を頭の中で正確に把握し、立体的な問題を容易に解決できます。"
+        },
+
+        {
+        name: "語学の才能",
+        description:
+        "外国語の構造や発音を直感的に理解し、新しい言語を非常に速く習得できます。"
+        },
+
+        {
+        name: "人心掌握の才能",
+        description:
+        "他人の感情や心理を敏感に察知し、人間関係を巧みに操ることができます。"
+        },
+
+        {
+        name: "記憶の才能",
+        description:
+        "大量の情報を正確に記憶し、必要なときに瞬時に取り出すことができます。"
+        },
+
+        {
+        name: "発明の才能",
+        description:
+        "既存の知識を組み合わせ、誰も思いつかなかった新しい仕組みを生み出します。"
+        },
+
+        {
+        name: "医学の才能",
+        description:
+        "人体や病気について極めて高い理解力を持ち、医学的な問題を素早く解決できます。"
+        }
+
+        ];
+
+
+
+        /* ==================================================
+        状態
+        ================================================== */
+
+        let selected = [];
+
+        let currentTalent = null;
+
+
+
+        /* ==================================================
+        HTML取得
+        ================================================== */
+
+        const scoreArea =
+        document.getElementById("score");
+
+
+        const confirmButton =
+        document.getElementById("confirmButton");
+
+
+        const randomButton =
+        document.getElementById("randomButton");
+
+
+
+        /* ==================================================
+        表示先
+        ================================================== */
+
+        const areas = {
+
+        brain: {
+
+        buff:
+        document.getElementById("brainBuff"),
+
+        debuff:
+        document.getElementById("brainDebuff"),
+
+        neutral:
+        document.getElementById("brainNeutral"),
+
+        neutralSection:
+        document.getElementById("brainNeutralSection")
+
+        },
+
+
+        body: {
+
+        buff:
+        document.getElementById("bodyBuff"),
+
+        debuff:
+        document.getElementById("bodyDebuff"),
+
+        neutral:
+        document.getElementById("bodyNeutral"),
+
+        neutralSection:
+        document.getElementById("bodyNeutralSection")
+
+        },
+
+
+        look: {
+
+        buff:
+        document.getElementById("lookBuff"),
+
+        debuff:
+        document.getElementById("lookDebuff"),
+
+        neutral:
+        document.getElementById("lookNeutral"),
+
+        neutralSection:
+        document.getElementById("lookNeutralSection")
+
+        }
+
+        };
+
+
+
+        /* ==================================================
+        選択済み確認
+        ================================================== */
+
+        function isSelectedByName(name) {
+
+        return selected.some(
+        function(index) {
+
+        return modifiers[index].name === name;
+
+        }
+        );
+
+        }
+
+
+
+        /* ==================================================
+        競合判定
+        ================================================== */
+
+        function isConflicting(index) {
+
+        const targetName =
+        modifiers[index].name;
+
+
+        for (
+        let i = 0;
+        i < conflicts.length;
+        i++
+        ) {
+
+        const pair =
+        conflicts[i];
+
+
+        const itemA =
+        pair[0];
+
+
+        const itemB =
+        pair[1];
+
+
+        if (
+        targetName === itemA &&
+        isSelectedByName(itemB)
+        ) {
+
+        return true;
+
+        }
+
+
+        if (
+        targetName === itemB &&
+        isSelectedByName(itemA)
+        ) {
+
+        return true;
+
+        }
+
+        }
+
+
+        return false;
+
+        }
+
+
+
+        /* ==================================================
+        天才
+        ================================================== */
+
+        function hasGenius() {
+
+        return selected.some(
+        function(index) {
+
+        return modifiers[index].name === "天才";
+
+        }
+        );
+
+        }
+
+
+
+        function generateTalent() {
+
+        if (!hasGenius()) {
+
+        currentTalent = null;
+
+        return;
+
+        }
+
+
+        if (currentTalent) {
+
+        return;
+
+        }
+
+
+        const randomIndex =
+        Math.floor(
+        Math.random() * talents.length
+        );
+
+
+        currentTalent =
+        talents[randomIndex];
+
+        }
+
+
+
+        /* ==================================================
+        数値による並び順
+        ==================================================
+
+        数値の絶対値が大きいものを上にする。
+
+        -12
+        -8
+        -6
+        -3
+        -2
+        -1
+
+        という順番。
+
+        ================================================== */
+
+        function sortModifiers(array) {
+
+        return [...array].sort(
+        function(a, b) {
+
+        return (
+        Math.abs(b.score)
+        -
+        Math.abs(a.score)
+        );
+
+        }
+        );
+
+        }
+
+
+
+        /* ==================================================
+        カード作成
+        ================================================== */
+
+        function createModifierCard(
+        modifier,
+        index
+        ) {
+
+        const card =
+        document.createElement("div");
+
+
+        card.className =
+        "modifier";
+
+
+        if (
+        selected.includes(index)
+        ) {
+
+        card.classList.add("selected");
+
+        }
+
+
+        const conflict =
+        !selected.includes(index)
+        &&
+        isConflicting(index);
+
+
+        if (conflict) {
+
+        card.classList.add(
+        "conflict-disabled"
+        );
+
+        }
+
+
+        let scoreClass;
+
+
+        /*
+        * マイナス = BUFF = 緑
+        * プラス   = DEBUFF = 赤
+        */
+
+        if (
+        modifier.score < 0
+        ) {
+
+        scoreClass =
+        "positive";
+
+        }
+
+        else if (
+        modifier.score > 0
+        ) {
+
+        scoreClass =
+        "negative";
+
+        }
+
+        else {
+
+        scoreClass =
+        "zero";
+
+        }
+
+
+        const sign =
+        modifier.score > 0
+        ? "+"
+        : "";
+
+
+        card.innerHTML = `
+
+        <div class="modifier-header">
+
+        <div class="modifier-name">
+
+        ${modifier.name}
+
+        </div>
+
+
+        <div
+        class="modifier-score ${scoreClass}">
+
+        ${sign}${modifier.score}
+
+        </div>
+
+        </div>
+
+
+        <div class="description">
+
+        ${modifier.description}
+
+        </div>
+
+        `;
+
+
+        card.onclick =
+        function() {
+
+
+        /*
+        * 選択解除
+        */
+
+        if (
+        selected.includes(index)
+        ) {
+
+        selected =
+        selected.filter(
+        function(i) {
+
+        return i !== index;
+
+        }
+        );
+
+
+        if (
+        modifier.name === "天才"
+        ) {
+
+        currentTalent =
+        null;
+
+        }
+
+        }
+
+
+        /*
+        * 選択
+        */
+
+        else {
+
+        if (
+        isConflicting(index)
+        ) {
+
+        return;
+
+        }
+
+
+        selected.push(index);
+
+        }
+
+
+        generateTalent();
+
+        displayModifiers();
+
+        calculateScore();
+
+        };
+
+
+        return card;
+
+        }
+
+
+
+        /* ==================================================
+        表示
+        ================================================== */
+
+        function displayModifiers() {
+
+
+        /*
+        * 全削除
+        */
+
+        Object.keys(areas).forEach(
+        function(category) {
+
+        areas[category].buff.innerHTML = "";
+
+        areas[category].debuff.innerHTML = "";
+
+        areas[category].neutral.innerHTML = "";
+
+        }
+        );
+
+
+
+        /*
+        * カテゴリごとに分類
+        */
+
+        const grouped = {
+
+        brain: {
+        buff: [],
+        debuff: [],
+        neutral: []
+        },
+
+        body: {
+        buff: [],
+        debuff: [],
+        neutral: []
+        },
+
+        look: {
+        buff: [],
+        debuff: [],
+        neutral: []
+        }
+
+        };
+
+
+
+        modifiers.forEach(
+        function(modifier, index) {
+
+
+        const category =
+        modifier.category;
+
+
+        if (
+        !grouped[category]
+        ) {
+
+        return;
+
+        }
+
+
+        if (
+        modifier.score < 0
+        ) {
+
+        grouped[category].buff.push({
+        modifier,
+        index
+        });
+
+        }
+
+        else if (
+        modifier.score > 0
+        ) {
+
+        grouped[category].debuff.push({
+        modifier,
+        index
+        });
+
+        }
+
+        else {
+
+        grouped[category].neutral.push({
+        modifier,
+        index
+        });
+
+        }
+
+        }
+        );
+
+
+
+        /*
+        * 頭脳 → 身体 → ルックス
+        *
+        * その中で数値の絶対値が大きい順
+        */
+
+        const categoryOrder = [
+        "brain",
+        "body",
+        "look"
+        ];
+
+
+
+        categoryOrder.forEach(
+        function(category) {
+
+
+        /*
+        * BUFF
+        */
+
+        const buff =
+        sortModifiers(
+        grouped[category].buff
+        );
+
+
+        buff.forEach(
+        function(item) {
+
+        areas[category].buff.appendChild(
+        createModifierCard(
+        item.modifier,
+        item.index
+        )
+        );
+
+        }
+        );
+
+
+
+        /*
+        * DEBUFF
+        */
+
+        const debuff =
+        sortModifiers(
+        grouped[category].debuff
+        );
+
+
+        debuff.forEach(
+        function(item) {
+
+        areas[category].debuff.appendChild(
+        createModifierCard(
+        item.modifier,
+        item.index
+        )
+        );
+
+        }
+        );
+
+
+
+        /*
+        * NEUTRAL
+        */
+
+        const neutral =
+        sortModifiers(
+        grouped[category].neutral
+        );
+
+
+        neutral.forEach(
+        function(item) {
+
+        areas[category].neutral.appendChild(
+        createModifierCard(
+        item.modifier,
+        item.index
+        )
+        );
+
+        }
+        );
+
+
+
+        /*
+        * NEUTRALが空なら非表示
+        */
+
+        if (
+        areas[category].neutral.children.length
+        ===
+        0
+        ) {
+
+        areas[category].neutralSection.style.display =
+        "none";
+
+        }
+
+        else {
+
+        areas[category].neutralSection.style.display =
+        "block";
+
+        }
+
+        }
+        );
+
+        }
+
+
+
+        /* ==================================================
+        合計
+        ================================================== */
+
+        function calculateScore() {
+
+        let total = 0;
+
+
+        selected.forEach(
+        function(index) {
+
+        total +=
+        modifiers[index].score;
+
+        }
+        );
+
+
+        const sign =
+        total > 0
+        ? "+"
+        : "";
+
+
+        scoreArea.textContent =
+        "合計："
+        +
+        sign
+        +
+        total;
+
+
+
+        /*
+        * 合計0
+        */
+
+        if (
+        total === 0
+        ) {
+
+        confirmButton.disabled =
+        false;
+
+
+        confirmButton.textContent =
+        "この人生を確定する";
+
+        }
+
+        else {
+
+        confirmButton.disabled =
+        true;
+
+
+        confirmButton.textContent =
+        "合計を0にすると確定できます";
+
+        }
+
+        }
+
+
+
+        /* ==================================================
+        シャッフル
+        ================================================== */
+
+        function shuffle(array) {
+
+        const result =
+        [...array];
+
+
+        for (
+        let i = result.length - 1;
+        i > 0;
+        i--
+        ) {
+
+        const j =
+        Math.floor(
+        Math.random() * (i + 1)
+        );
+
+
+        const temp =
+        result[i];
+
+
+        result[i] =
+        result[j];
+
+
+        result[j] =
+        temp;
+
+        }
+
+
+        return result;
+
+        }
+
+
+
+        /* ==================================================
+        通常生成
+        ================================================== */
+
+        confirmButton.onclick =
+        function() {
+
+
+        const total =
+        selected.reduce(
+        function(
+        sum,
+        index
+        ) {
+
+        return (
+        sum
+        +
+        modifiers[index].score
+        );
+
+        },
+        0
+        );
+
+
+        if (
+        total !== 0
+        ) {
+
+        alert(
+        "合計を0にしてください。"
+        );
+
+        return;
+
+        }
+
+
+        const selectedModifiers =
+        selected.map(
+        function(index) {
+
+        return modifiers[index];
+
+        }
+        );
+
+
+        generateTalent();
+
+
+        const name =
+        prompt(
+        "この人物の名前を入力してください"
+        );
+
+
+        if (
+        name === null
+        ) {
+
+        return;
+
+        }
+
+
+        const trimmedName =
+        name.trim();
+
+
+        if (
+        trimmedName === ""
+        ) {
+
+        alert(
+        "名前を入力してください。"
+        );
+
+        return;
+
+        }
+
+
+        const people =
+        JSON.parse(
+        localStorage.getItem(
+        "lifeModifiers"
+        )
+        )
+        ||
+        [];
+
+
+        const person = {
+
+        id:
+        Date.now(),
+
+        name:
+        trimmedName,
+
+        modifiers:
+        selectedModifiers,
+
+        talent:
+        currentTalent,
+
+        total:
+        total,
+
+        random:
+        false
+
+        };
+
+
+        people.push(
+        person
+        );
+
+
+        localStorage.setItem(
+        "lifeModifiers",
+        JSON.stringify(
+        people
+        )
+        );
+
+
+        window.location.href =
+        "people.html";
+
+        };
+
+
+
+        /* ==================================================
+        完全ランダム生成
+        ================================================== */
+
+        randomButton.onclick =
+        function() {
+
+
+        /*
+        * 名前を先に入力
+        */
+
+        const name =
+        prompt(
+        "ランダム生成された人物の名前を入力してください"
+        );
+
+
+        if (
+        name === null
+        ) {
+
+        return;
+
+        }
+
+
+        const trimmedName =
+        name.trim();
+
+
+        if (
+        trimmedName === ""
+        ) {
+
+        alert(
+        "名前を入力してください。"
+        );
+
+        return;
+
+        }
+
+
+
+        /*
+        * ここからランダム生成
+        */
+
+        selected = [];
+
+        currentTalent = null;
+
+
+
+        /*
+        * 個数をランダム決定
+
+        * 1個 ～ 全項目
+        */
+
+        const randomCount =
+        Math.floor(
+        Math.random()
+        *
+        modifiers.length
+        )
+        +
+        1;
+
+
+
+        /*
+        * 全項目をシャッフル
+        */
+
+        const indexes =
+        shuffle(
+        modifiers.map(
+        function(
+        _,
+        index
+        ) {
+
+        return index;
+
+        }
+        )
+        );
+
+
+
+        /*
+        * 競合を避けながら選択
+        */
+
+        for (
+        let i = 0;
+        i < indexes.length;
+        i++
+        ) {
+
+        const index =
+        indexes[i];
+
+
+        if (
+        isConflicting(index)
+        ) {
+
+        continue;
+
+        }
+
+
+        selected.push(
+        index
+        );
+
+
+        if (
+        selected.length
+        >=
+        randomCount
+        ) {
+
+        break;
+
+        }
+
+        }
+
+
+
+        /*
+        * 天才の才能
+        */
+
+        generateTalent();
+
+
+
+        /*
+        * 保存するモディファイア
+        */
+
+        const selectedModifiers =
+        selected.map(
+        function(index) {
+
+        return modifiers[index];
+
+        }
+        );
+
+
+
+        /*
+        * 合計値
+
+        * ランダム生成では
+        * 0にする必要なし
+        */
+
+        const total =
+        selectedModifiers.reduce(
+        function(
+        sum,
+        modifier
+        ) {
+
+        return (
+        sum
+        +
+        modifier.score
+        );
+
+        },
+        0
+        );
+
+
+
+        /*
+        * 人物
+        */
+
+        const person = {
+
+        id:
+        Date.now(),
+
+        name:
+        trimmedName,
+
+        modifiers:
+        selectedModifiers,
+
+        talent:
+        currentTalent,
+
+        total:
+        total,
+
+        random:
+        true
+
+        };
+
+
+
+        /*
+        * 保存
+        */
+
+        const people =
+        JSON.parse(
+        localStorage.getItem(
+        "lifeModifiers"
+        )
+        )
+        ||
+        [];
+
+
+        people.push(
+        person
+        );
+
+
+        localStorage.setItem(
+        "lifeModifiers",
+
+        JSON.stringify(
+        people
+        )
+        );
+
+
+
+        /*
+        * 人物一覧へ
+        */
+
+        window.location.href =
+        "people.html";
+
+        };
+
+
+
+        /* ==================================================
+        初期表示
+        ================================================== */
+
+        displayModifiers();
+
+        calculateScore();
+
+
+    </script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,863 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>今まで作った人</title>
+
+
+    <style>
+
+        /* ========================================
+           全体
+        ======================================== */
+
+        body {
+            margin: 0;
+            background: #181818;
+            color: #eeeeee;
+            font-family: Arial, "Noto Sans JP", sans-serif;
+        }
+
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+
+        /* ========================================
+           タイトル
+        ======================================== */
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+
+        /* ========================================
+           セクション
+        ======================================== */
+
+        .section {
+            margin-bottom: 45px;
+        }
+
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+
+            .section-title::after {
+                content: "";
+                flex: 1;
+                height: 1px;
+                background: #444444;
+            }
+
+
+        .normal-title {
+            color: #aaaaaa;
+        }
+
+
+        .random-title {
+            color: #777777;
+        }
+
+
+        /* ========================================
+           人物カード
+        ======================================== */
+
+        .person {
+            background: #242424;
+            border: 1px solid #3d3d3d;
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s;
+        }
+
+
+            .person:hover {
+                background: #2d2d2d;
+                border-color: #666666;
+            }
+
+
+        /* ========================================
+           人物カード上段
+        ======================================== */
+
+        .person-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+
+        /* ========================================
+           人物名
+        ======================================== */
+
+        .person-name {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+
+        /* ========================================
+           右側の数値
+        ======================================== */
+
+        .person-total {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+
+        /* ========================================
+           数値の色
+
+           マイナス = 緑
+           プラス   = 赤
+           0        = 灰
+        ======================================== */
+
+        .positive {
+            color: #55cc77;
+        }
+
+
+        .negative {
+            color: #ff5555;
+        }
+
+
+        .zero {
+            color: #aaaaaa;
+        }
+
+
+        /* ========================================
+           モード表示
+        ======================================== */
+
+        .person-mode {
+            margin-top: 6px;
+            color: #777777;
+            font-size: 12px;
+        }
+
+
+        /* ========================================
+           人物がいない場合
+        ======================================== */
+
+        .empty {
+            color: #666666;
+            text-align: center;
+            padding: 30px 0;
+        }
+
+
+        /* ========================================
+           戻る
+        ======================================== */
+
+        .back {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            color: #888888;
+            text-decoration: none;
+        }
+
+
+            .back:hover {
+                color: white;
+            }
+
+
+        /* ========================================
+           管理
+        ======================================== */
+
+        .admin-area {
+            margin-top: 100px;
+            padding-top: 15px;
+            border-top: 1px solid #242424;
+            color: #555555;
+            font-size: 12px;
+        }
+
+
+            .admin-area summary {
+                cursor: pointer;
+                color: #555555;
+            }
+
+
+                .admin-area summary:hover {
+                    color: #777777;
+                }
+
+
+        .admin-content {
+            margin-top: 15px;
+            background: #1d1d1d;
+            border: 1px solid #292929;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+
+        /* ========================================
+           全削除ボタン
+        ======================================== */
+
+        #deleteAll {
+            background: #351f1f;
+            color: #aa6666;
+            border: 1px solid #4a2929;
+            border-radius: 6px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+
+            #deleteAll:hover {
+                background: #4a2525;
+                color: #dd7777;
+            }
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="container">
+
+
+        <!-- ========================================
+             タイトル
+        ======================================== -->
+
+        <h1>
+            今まで作った人
+        </h1>
+
+
+        <!-- ========================================
+             通常生成
+        ======================================== -->
+
+        <section class="section">
+
+            <div class="section-title normal-title">
+
+                通常生成
+
+            </div>
+
+
+            <div id="normalPeople"></div>
+
+        </section>
+
+
+        <!-- ========================================
+             ランダム生成
+        ======================================== -->
+
+        <section class="section">
+
+            <div class="section-title random-title">
+
+                ランダム生成
+
+            </div>
+
+
+            <div id="randomPeople"></div>
+
+        </section>
+
+
+        <!-- ========================================
+             戻る
+        ======================================== -->
+
+        <a class="back"
+           href="index.html">
+
+            ← モディファイアを選ぶ
+
+        </a>
+
+
+        <!-- ========================================
+             管理
+        ======================================== -->
+
+        <details class="admin-area">
+
+            <summary>
+                管理
+            </summary>
+
+
+            <div class="admin-content">
+
+                <button id="deleteAll">
+
+                    登録データをすべて削除
+
+                </button>
+
+            </div>
+
+        </details>
+
+
+    </div>
+
+
+
+    <script>
+
+
+        /* ==================================================
+        人物データ
+        ================================================== */
+
+        const people =
+        JSON.parse(
+        localStorage.getItem(
+        "lifeModifiers"
+        )
+        ) || [];
+
+
+
+        /* ==================================================
+        HTML取得
+        ================================================== */
+
+        const normalArea =
+        document.getElementById(
+        "normalPeople"
+        );
+
+
+        const randomArea =
+        document.getElementById(
+        "randomPeople"
+        );
+
+
+
+        /* ==================================================
+        合計計算
+        ================================================== */
+
+        function calculateTotal(person) {
+
+        let total = 0;
+
+
+        if (
+        Array.isArray(
+        person.modifiers
+        )
+        ) {
+
+        person.modifiers.forEach(
+        function(modifier) {
+
+        total +=
+        Number(
+        modifier.score
+        ) || 0;
+
+        }
+        );
+
+        }
+
+
+        return total;
+
+        }
+
+
+
+        /* ==================================================
+        数値の色を決める
+
+        マイナス = 緑
+        プラス   = 赤
+        0        = 灰
+        ================================================== */
+
+        function getScoreClass(score) {
+
+        if (score < 0) {
+
+        return "positive";
+
+        }
+
+
+        if (score > 0) {
+
+        return "negative";
+
+        }
+
+
+        return "zero";
+
+        }
+
+
+
+        /* ==================================================
+        人物カード作成
+        ================================================== */
+
+        function createPersonCard(person) {
+
+
+        const element =
+        document.createElement(
+        "div"
+        );
+
+
+        element.className =
+        "person";
+
+
+        /* ==============================================
+        合計
+        ============================================== */
+
+        const total =
+        calculateTotal(
+        person
+        );
+
+
+
+        /* ==============================================
+        通常生成
+        → 選択した項目数
+
+        ランダム生成
+        → 合計値
+        ============================================== */
+
+        let rightText;
+
+        let rightClass = "";
+
+
+
+        if (
+        person.random === true
+        ) {
+
+
+        /* ==========================================
+        ランダム生成
+
+        実際の合計値を表示
+        ========================================== */
+
+        const sign =
+        total > 0
+        ? "+"
+        : "";
+
+
+        rightText =
+        `${sign}${total}`;
+
+
+        /*
+        * マイナス → 緑
+        * プラス   → 赤
+        * 0        → 灰
+        */
+
+        rightClass =
+        getScoreClass(
+        total
+        );
+
+        }
+
+
+        else {
+
+
+        /* ==========================================
+        通常生成
+
+        選択した項目数を表示
+        ========================================== */
+
+        const count =
+        Array.isArray(
+        person.modifiers
+        )
+        ?
+        person.modifiers.length
+        :
+        0;
+
+
+        rightText =
+        `${count}個`;
+
+
+        /*
+        * 項目数なので色は灰色
+        */
+
+        rightClass =
+        "zero";
+
+        }
+
+
+
+        /* ==============================================
+        カード
+        ============================================== */
+
+        element.innerHTML = `
+
+        <div class="person-header">
+
+
+        <div class="person-name">
+
+        ${person.name}
+
+        </div>
+
+
+        <div
+        class="person-total ${rightClass}">
+
+        ${rightText}
+
+        </div>
+
+
+        </div>
+
+        `;
+
+
+
+        /* ==============================================
+        クリック
+        ============================================== */
+
+        element.onclick =
+        function() {
+
+
+        /* ======================================
+        選択した人物を保存
+        ====================================== */
+
+        localStorage.setItem(
+        "selectedPerson",
+
+        JSON.stringify(
+        person
+        )
+        );
+
+
+        /* ======================================
+        RESULTへ
+        ====================================== */
+
+        window.location.href =
+        "result.html";
+
+        };
+
+
+
+        return element;
+
+        }
+
+
+
+        /* ==================================================
+        人物を新しい順にする
+        ================================================== */
+
+        const sortedPeople =
+        people
+        .slice()
+        .reverse();
+
+
+
+        /* ==================================================
+        通常生成 / ランダム生成に分ける
+        ================================================== */
+
+        let normalCount = 0;
+
+        let randomCount = 0;
+
+
+
+        sortedPeople.forEach(
+        function(person) {
+
+
+        const card =
+        createPersonCard(
+        person
+        );
+
+
+        /* ==========================================
+        ランダム生成
+        ========================================== */
+
+        if (
+        person.random === true
+        ) {
+
+        randomArea.appendChild(
+        card
+        );
+
+
+        randomCount++;
+
+        }
+
+
+        /* ==========================================
+        通常生成
+        ========================================== */
+
+        else {
+
+        normalArea.appendChild(
+        card
+        );
+
+
+        normalCount++;
+
+        }
+
+        }
+        );
+
+
+
+        /* ==================================================
+        人物がいない場合
+        ================================================== */
+
+        if (
+        normalCount === 0
+        ) {
+
+        normalArea.innerHTML = `
+
+        <div class="empty">
+
+        まだ通常生成された人物はいません。
+
+        </div>
+
+        `;
+
+        }
+
+
+
+        if (
+        randomCount === 0
+        ) {
+
+        randomArea.innerHTML = `
+
+        <div class="empty">
+
+        まだランダム生成された人物はいません。
+
+        </div>
+
+        `;
+
+        }
+
+
+
+        /* ==================================================
+        全データ削除
+        ================================================== */
+
+        const deleteAllButton =
+        document.getElementById(
+        "deleteAll"
+        );
+
+
+        if (
+        deleteAllButton
+        ) {
+
+
+        deleteAllButton.addEventListener(
+        "click",
+
+        function() {
+
+
+        /* ======================================
+        パスワード
+        ====================================== */
+
+        const correctPassword =
+        "1234";
+
+
+        const password =
+        prompt(
+        "管理パスワードを入力してください"
+        );
+
+
+        /* ======================================
+        キャンセル
+        ====================================== */
+
+        if (
+        password === null
+        ) {
+
+        return;
+
+        }
+
+
+
+        /* ======================================
+        パスワード確認
+        ====================================== */
+
+        if (
+        password.trim()
+        !==
+        correctPassword
+        ) {
+
+        alert(
+        "パスワードが違います。"
+        );
+
+
+        return;
+
+        }
+
+
+
+        /* ======================================
+        最終確認
+        ====================================== */
+
+        const confirmed =
+        confirm(
+        "登録されている人物データをすべて削除します。\n\n本当に削除しますか？"
+        );
+
+
+        if (
+        !confirmed
+        ) {
+
+        return;
+
+        }
+
+
+
+        /* ======================================
+        データ削除
+        ====================================== */
+
+        localStorage.removeItem(
+        "lifeModifiers"
+        );
+
+
+        localStorage.removeItem(
+        "selectedPerson"
+        );
+
+
+
+        /* ======================================
+        確認
+        ====================================== */
+
+        alert(
+        "すべての人物データを削除しました。"
+        );
+
+
+
+        /* ======================================
+        ページ更新
+        ====================================== */
+
+        window.location.reload();
+
+        }
+        );
+
+        }
+
+
+    </script>
+
+
+</body>
+
+</html>

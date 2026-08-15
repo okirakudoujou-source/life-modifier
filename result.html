@@ -1,0 +1,663 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>人生の結果</title>
+
+
+    <style>
+
+        /* ========================================
+           全体
+        ======================================== */
+
+        body {
+            margin: 0;
+            background: #181818;
+            color: #eeeeee;
+            font-family: Arial, "Noto Sans JP", sans-serif;
+        }
+
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+
+        /* ========================================
+           名前
+        ======================================== */
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+
+        /* ========================================
+           合計
+        ======================================== */
+
+        #total {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+
+        /* ========================================
+           数値の色
+
+           INDEXと同じ設定
+
+           マイナス = 緑
+           プラス   = 赤
+           0        = 灰色
+        ======================================== */
+
+        .positive {
+            color: #55cc77;
+        }
+
+
+        .negative {
+            color: #ff5555;
+        }
+
+
+        .zero {
+            color: #aaaaaa;
+        }
+
+
+        /* ========================================
+           通常生成 / ランダム生成
+        ======================================== */
+
+        #mode {
+            text-align: center;
+            color: #777777;
+            font-size: 12px;
+            margin-bottom: 25px;
+        }
+
+
+        /* ========================================
+           天才の才能
+        ======================================== */
+
+        #talent {
+            background: #292929;
+            border: 1px solid #555555;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+
+        .talent-title {
+            color: #999999;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+
+        .talent-name {
+            font-size: 23px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+
+        .talent-description {
+            color: #999999;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+
+        /* ========================================
+           モディファイア
+        ======================================== */
+
+        .modifier {
+            background: #242424;
+            border: 1px solid #3d3d3d;
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 12px;
+        }
+
+
+        /* ========================================
+           モディファイア上段
+        ======================================== */
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+
+        /* ========================================
+           名前
+        ======================================== */
+
+        .name {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+
+        /* ========================================
+           数値
+        ======================================== */
+
+        .score {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+
+        /* ========================================
+           説明
+        ======================================== */
+
+        .description {
+            margin-top: 8px;
+            color: #999999;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+
+        /* ========================================
+           戻るボタン
+        ======================================== */
+
+        .back {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            color: #888888;
+            text-decoration: none;
+        }
+
+
+            .back:hover {
+                color: #ffffff;
+            }
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="container">
+
+
+        <!-- ========================================
+             名前
+        ======================================== -->
+
+        <h1 id="personName">
+            人物
+        </h1>
+
+
+        <!-- ========================================
+             通常生成 / ランダム生成
+        ======================================== -->
+
+        <div id="mode"></div>
+
+
+        <!-- ========================================
+             合計
+        ======================================== -->
+
+        <div id="total">
+            合計：0
+        </div>
+
+
+        <!-- ========================================
+             天才の才能
+        ======================================== -->
+
+        <div id="talent"></div>
+
+
+        <!-- ========================================
+             モディファイア
+        ======================================== -->
+
+        <div id="modifiers"></div>
+
+
+        <!-- ========================================
+             戻る
+        ======================================== -->
+
+        <a class="back"
+           href="people.html">
+
+            ← 人物一覧へ戻る
+
+        </a>
+
+
+    </div>
+
+
+
+    <script>
+
+
+        /* ==================================================
+        選択された人物を取得
+        ================================================== */
+
+        const person =
+        JSON.parse(
+        localStorage.getItem(
+        "selectedPerson"
+        )
+        );
+
+
+
+        /* ==================================================
+        HTML要素を取得
+        ================================================== */
+
+        const nameArea =
+        document.getElementById(
+        "personName"
+        );
+
+
+        const modeArea =
+        document.getElementById(
+        "mode"
+        );
+
+
+        const totalArea =
+        document.getElementById(
+        "total"
+        );
+
+
+        const talentArea =
+        document.getElementById(
+        "talent"
+        );
+
+
+        const modifiersArea =
+        document.getElementById(
+        "modifiers"
+        );
+
+
+
+        /* ==================================================
+        人物が存在しない場合
+        ================================================== */
+
+        if (!person) {
+
+
+        nameArea.textContent =
+        "人物が見つかりません";
+
+
+        modeArea.style.display =
+        "none";
+
+
+        totalArea.style.display =
+        "none";
+
+
+        talentArea.style.display =
+        "none";
+
+
+        }
+
+
+        /* ==================================================
+        人物が存在する場合
+        ================================================== */
+
+        else {
+
+
+        /* ==============================================
+        名前
+        ============================================== */
+
+        nameArea.textContent =
+        person.name;
+
+
+
+        /* ==============================================
+        通常生成 / ランダム生成
+        ============================================== */
+
+        if (
+        person.random === true
+        ) {
+
+        modeArea.textContent =
+        "ランダム生成";
+
+        }
+
+        else {
+
+        modeArea.textContent =
+        "通常生成";
+
+        }
+
+
+
+        /* ==============================================
+        合計値を計算
+
+        保存されているtotalではなく、
+        保存されているモディファイアから再計算
+        ============================================== */
+
+        let total = 0;
+
+
+        if (
+        Array.isArray(
+        person.modifiers
+        )
+        ) {
+
+
+        person.modifiers.forEach(
+        function(modifier) {
+
+
+        total +=
+        Number(
+        modifier.score
+        ) || 0;
+
+
+        }
+        );
+
+        }
+
+
+
+        /* ==============================================
+        合計値の色
+
+        マイナス = 緑
+        プラス   = 赤
+        0        = 灰色
+        ============================================== */
+
+        let totalClass;
+
+
+        if (
+        total < 0
+        ) {
+
+        totalClass =
+        "positive";
+
+        }
+
+        else if (
+        total > 0
+        ) {
+
+        totalClass =
+        "negative";
+
+        }
+
+        else {
+
+        totalClass =
+        "zero";
+
+        }
+
+
+
+        /* ==============================================
+        プラス記号
+        ============================================== */
+
+        const totalSign =
+        total > 0
+        ? "+"
+        : "";
+
+
+
+        /* ==============================================
+        合計表示
+        ============================================== */
+
+        totalArea.innerHTML = `
+
+        合計：
+
+        <span class="${totalClass}">
+
+        ${totalSign}${total}
+
+        </span>
+
+        `;
+
+
+
+        /* ==============================================
+        天才の才能
+        ============================================== */
+
+        if (
+        person.talent
+        ) {
+
+
+        talentArea.innerHTML = `
+
+        <div class="talent-title">
+        天才の才能
+        </div>
+
+        <div class="talent-name">
+        ${person.talent.name}
+        </div>
+
+        <div class="talent-description">
+        ${person.talent.description}
+        </div>
+
+        `;
+
+
+        talentArea.style.display =
+        "block";
+
+        }
+
+        else {
+
+
+        talentArea.style.display =
+        "none";
+
+        }
+
+
+
+        /* ==============================================
+        モディファイア
+        ============================================== */
+
+        if (
+        Array.isArray(
+        person.modifiers
+        )
+        ) {
+
+
+        person.modifiers.forEach(
+        function(modifier) {
+
+
+        /* ==================================
+        カード作成
+        ================================== */
+
+        const element =
+        document.createElement(
+        "div"
+        );
+
+
+        element.className =
+        "modifier";
+
+
+
+        /* ==================================
+        数値の色
+
+        INDEXと完全に同じ
+
+        マイナス = 緑
+        プラス   = 赤
+        0        = 灰色
+        ================================== */
+
+        let scoreClass;
+
+
+        if (
+        modifier.score < 0
+        ) {
+
+        scoreClass =
+        "positive";
+
+        }
+
+        else if (
+        modifier.score > 0
+        ) {
+
+        scoreClass =
+        "negative";
+
+        }
+
+        else {
+
+        scoreClass =
+        "zero";
+
+        }
+
+
+
+        /* ==================================
+        プラス記号
+        ================================== */
+
+        const sign =
+        modifier.score > 0
+        ? "+"
+        : "";
+
+
+
+        /* ==================================
+        カード内容
+        ================================== */
+
+        element.innerHTML = `
+
+        <div class="header">
+
+        <div class="name">
+
+        ${modifier.name}
+
+        </div>
+
+
+        <div
+        class="score ${scoreClass}">
+
+        ${sign}${modifier.score}
+
+        </div>
+
+        </div>
+
+
+        <div class="description">
+
+        ${modifier.description}
+
+        </div>
+
+        `;
+
+
+
+        /* ==================================
+        画面に追加
+        ================================== */
+
+        modifiersArea.appendChild(
+        element
+        );
+
+
+        }
+        );
+
+        }
+
+
+        }
+
+
+    </script>
+
+
+</body>
+
+</html>
