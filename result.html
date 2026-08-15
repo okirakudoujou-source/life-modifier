@@ -974,6 +974,18 @@
 
         if (person.random === true) {
 
+        /*
+        * 通常生成とランダム生成で表示を分ける
+        *
+        * 通常生成：
+        * 選択した項目数を表示
+        *
+        * ランダム生成：
+        * 今まで通り合計値を表示
+        */
+
+        if (person.random === true) {
+
         const totalSign =
         total > 0
         ? "+"
@@ -981,33 +993,45 @@
 
 
         totalArea.innerHTML = `
+
         合計：
+
         <span class="${totalClass}">
+
         ${totalSign}${total}
+
         </span>
+
         `;
 
         }
 
         else {
 
-        const modifierCount =
+        const selectedCount =
         Array.isArray(person.modifiers)
-        ? person.modifiers.length
-        : 0;
+        ?
+        person.modifiers.length
+        :
+        0;
 
 
         totalArea.innerHTML = `
+
         選択項目：
+
         <span class="zero">
-        ${modifierCount}個
+
+        ${selectedCount}個
+
         </span>
+
         `;
 
         }
 
 
-        if (person.talent) {
+                if (person.talent) {
 
         talentArea.innerHTML = `
 
