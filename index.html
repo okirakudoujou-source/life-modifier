@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿
+<!DOCTYPE html>
 <html lang="ja">
 
 <head>
@@ -367,6 +368,7 @@
         }
     </style>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 
@@ -637,7 +639,7 @@
         ================================================== */
 
 
-       
+
 
         {
         name: "高IQ",
@@ -719,7 +721,7 @@
         },
 
 
-        
+
 
 
         {
@@ -788,20 +790,20 @@
         /* ==================================================
         身体
         ================================================== */
-         {
- name: "器用",
- score: -1,
- category: "body",
- description:
- "繊細な作業をそつなくこなします"
- },
         {
-name: "不器用",
-score: 1,
-category: "body",
-description:
-"細かい作業がストレスに感じるでしょう"
-},
+        name: "器用",
+        score: -1,
+        category: "body",
+        description:
+        "繊細な作業をそつなくこなします"
+        },
+        {
+        name: "不器用",
+        score: 1,
+        category: "body",
+        description:
+        "細かい作業がストレスに感じるでしょう"
+        },
 
         {
         name: "頑健",
@@ -983,7 +985,7 @@ description:
         },
 
 
-       
+
 
 
         {
@@ -1174,13 +1176,13 @@ description:
         },
 
         {
-name: "花粉症",
-score: 2,
-category: "body",
-description:
-"花粉に対する反応が過敏になり、常にくしゃみと鼻水に悩まされるでしょう"
-},
-     
+        name: "花粉症",
+        score: 2,
+        category: "body",
+        description:
+        "花粉に対する反応が過敏になり、常にくしゃみと鼻水に悩まされるでしょう"
+        },
+
 
 
         {
@@ -1196,13 +1198,13 @@ description:
         /* ==================================================
         ルックス
         ================================================== */
-         {
- name: "無臭体質",
- score: -2,
- category: "look",
- description:
- "汗をかいても体臭がほとんどなく、運動後や暑い日でも嫌な匂いが発生しにくい体質です"
- },
+        {
+        name: "無臭体質",
+        score: -2,
+        category: "look",
+        description:
+        "汗をかいても体臭がほとんどなく、運動後や暑い日でも嫌な匂いが発生しにくい体質です"
+        },
 
         {
         name: "美しい顔",
@@ -1298,7 +1300,7 @@ description:
         description:
         "歯が不規則に並んでおり、見た目や口腔内の手入れに苦労します"
         },
-        
+
         {
         name: "口臭が出やすい",
         score: 1,
@@ -1307,13 +1309,13 @@ description:
         "口腔内の状態によって口臭が発生しやすく、対策をしても気になりやすい体質です"
         },
 
-           {
-   name: "体臭が強い",
-   score: 2,
-   category: "look",
-   description:
-   "汗をかくと独特の体臭が発生しやすく、入浴や制汗対策をしていても匂いが残りやすい体質です"
-   },
+        {
+        name: "体臭が強い",
+        score: 2,
+        category: "look",
+        description:
+        "汗をかくと独特の体臭が発生しやすく、入浴や制汗対策をしていても匂いが残りやすい体質です"
+        },
         {
         name: "醜い顔",
         score: 3,
@@ -1395,8 +1397,8 @@ description:
         ["高IQ", "記憶力抜群"],
 
         ["モデル体型", "不格好"],
-        
-        
+
+
 
         ["要領良し", "要領が悪い"],
 
@@ -1451,7 +1453,7 @@ description:
 
         ["消化能力", "胃腸が弱い"],
 
-        
+
 
         ["無臭体質", "体臭が強い"],
         ["無臭体質", "口臭が出やすい"]
@@ -2304,12 +2306,28 @@ description:
 
 
         /* ==================================================
+        Supabase
+        ================================================== */
+
+        const SUPABASE_URL =
+        "https://lktkcaicxkelczdmtbwm.supabase.co";
+
+        const SUPABASE_KEY =
+        "sb_publishable_ok4J9vo7cyId75h7rl0-yg_LqqjVhRV";
+
+        const db =
+        window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+        );
+
+
+        /* ==================================================
         通常生成
         ================================================== */
 
         confirmButton.onclick =
-        function() {
-
+        async function() {
 
         const total =
         selected.reduce(
@@ -2387,20 +2405,7 @@ description:
         }
 
 
-        const people =
-        JSON.parse(
-        localStorage.getItem(
-        "lifeModifiers"
-        )
-        )
-        ||
-        [];
-
-
         const person = {
-
-        id:
-        Date.now(),
 
         name:
         trimmedName,
@@ -2420,17 +2425,24 @@ description:
         };
 
 
-        people.push(
-        person
-        );
+        const { error } =
+        await db
+        .from("people")
+        .insert(person);
 
 
-        localStorage.setItem(
-        "lifeModifiers",
-        JSON.stringify(
-        people
-        )
+        if (error) {
+
+        console.error(error);
+
+        alert(
+        "人物の保存に失敗しました。\n" +
+        error.message
         );
+
+        return;
+
+        }
 
 
         window.location.href =
@@ -2445,8 +2457,7 @@ description:
         ================================================== */
 
         randomButton.onclick =
-        function() {
-
+        async function() {
 
         /*
         * 名前を先に入力
@@ -2497,8 +2508,6 @@ description:
 
         /*
         * 個数をランダム決定
-
-        * 1個 ～ 全項目
         */
 
         const randomCount =
@@ -2599,9 +2608,6 @@ description:
 
         /*
         * 合計値
-
-        * ランダム生成では
-        * 0にする必要なし
         */
 
         const total =
@@ -2624,13 +2630,10 @@ description:
 
 
         /*
-        * 人物
+        * Supabaseへ保存
         */
 
         const person = {
-
-        id:
-        Date.now(),
 
         name:
         trimmedName,
@@ -2650,34 +2653,24 @@ description:
         };
 
 
-
-        /*
-        * 保存
-        */
-
-        const people =
-        JSON.parse(
-        localStorage.getItem(
-        "lifeModifiers"
-        )
-        )
-        ||
-        [];
+        const { error } =
+        await db
+        .from("people")
+        .insert(person);
 
 
-        people.push(
-        person
+        if (error) {
+
+        console.error(error);
+
+        alert(
+        "ランダム生成した人物の保存に失敗しました。\n" +
+        error.message
         );
 
+        return;
 
-        localStorage.setItem(
-        "lifeModifiers",
-
-        JSON.stringify(
-        people
-        )
-        );
-
+        }
 
 
         /*

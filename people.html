@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿
+<!DOCTYPE html>
 <html lang="ja">
 
 <head>
@@ -248,6 +249,7 @@
             }
     </style>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 
@@ -344,22 +346,25 @@
 
     <script>
 
-
         /* ==================================================
-        人物データ
+        Supabase
         ================================================== */
 
-        const people =
-        JSON.parse(
-        localStorage.getItem(
-        "lifeModifiers"
-        )
-        ) || [];
+        const SUPABASE_URL =
+        "https://lktkcaicxkelczdmtbwm.supabase.co";
 
+        const SUPABASE_KEY =
+        "sb_publishable_ok4J9vo7cyId75h7rl0-yg_LqqjVhRV";
+
+        const db =
+        window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+        );
 
 
         /* ==================================================
-        HTML取得
+        HTML
         ================================================== */
 
         const normalArea =
@@ -367,12 +372,10 @@
         "normalPeople"
         );
 
-
         const randomArea =
         document.getElementById(
         "randomPeople"
         );
-
 
 
         /* ==================================================
@@ -382,7 +385,6 @@
         function calculateTotal(person) {
 
         let total = 0;
-
 
         if (
         Array.isArray(
@@ -403,19 +405,13 @@
 
         }
 
-
         return total;
 
         }
 
 
-
         /* ==================================================
-        数値の色を決める
-
-        マイナス = 緑
-        プラス   = 赤
-        0        = 灰
+        数値の色
         ================================================== */
 
         function getScoreClass(score) {
@@ -426,40 +422,31 @@
 
         }
 
-
         if (score > 0) {
 
         return "negative";
 
         }
 
-
         return "zero";
 
         }
 
 
-
         /* ==================================================
-        人物カード作成
+        人物カード
         ================================================== */
 
         function createPersonCard(person) {
-
 
         const element =
         document.createElement(
         "div"
         );
 
-
         element.className =
         "person";
 
-
-        /* ==============================================
-        合計
-        ============================================== */
 
         const total =
         calculateTotal(
@@ -467,47 +454,21 @@
         );
 
 
-
-        /* ==============================================
-        通常生成
-        → 選択した項目数
-
-        ランダム生成
-        → 合計値
-        ============================================== */
-
         let rightText;
-
         let rightClass = "";
-
 
 
         if (
         person.random === true
         ) {
 
-
-        /* ==========================================
-        ランダム生成
-
-        実際の合計値を表示
-        ========================================== */
-
         const sign =
         total > 0
         ? "+"
         : "";
 
-
         rightText =
         `${sign}${total}`;
-
-
-        /*
-        * マイナス → 緑
-        * プラス   → 赤
-        * 0        → 灰
-        */
 
         rightClass =
         getScoreClass(
@@ -516,15 +477,7 @@
 
         }
 
-
         else {
-
-
-        /* ==========================================
-        通常生成
-
-        選択した項目数を表示
-        ========================================== */
 
         const count =
         Array.isArray(
@@ -535,14 +488,8 @@
         :
         0;
 
-
         rightText =
         `${count}個`;
-
-
-        /*
-        * 項目数なので色は灰色
-        */
 
         rightClass =
         "zero";
@@ -550,22 +497,13 @@
         }
 
 
-
-        /* ==============================================
-        カード
-        ============================================== */
-
         element.innerHTML = `
 
         <div class="person-header">
 
-
         <div class="person-name">
-
         ${person.name}
-
         </div>
-
 
         <div
         class="person-total ${rightClass}">
@@ -574,43 +512,21 @@
 
         </div>
 
-
         </div>
 
         `;
 
 
-
-        /* ==============================================
-        クリック
-        ============================================== */
-
         element.onclick =
         function() {
 
-
-        /* ======================================
-        選択した人物を保存
-        ====================================== */
-
-        localStorage.setItem(
-        "selectedPerson",
-
-        JSON.stringify(
-        person
-        )
+        window.location.href =
+        "result.html?id=" +
+        encodeURIComponent(
+        person.id
         );
 
-
-        /* ======================================
-        RESULTへ
-        ====================================== */
-
-        window.location.href =
-        "result.html";
-
         };
-
 
 
         return element;
@@ -618,41 +534,63 @@
         }
 
 
-
         /* ==================================================
-        人物を新しい順にする
+        人物一覧を取得
         ================================================== */
 
-        const sortedPeople =
-        people
-        .slice()
-        .reverse();
+        async function loadPeople() {
+
+        normalArea.innerHTML =
+        '<div class="empty">読み込み中...</div>';
+
+        randomArea.innerHTML =
+        '<div class="empty">読み込み中...</div>';
 
 
+        const { data, error } =
+        await db
+        .from("people")
+        .select("*")
+        .order(
+        "created_at",
+        { ascending: false }
+        );
 
-        /* ==================================================
-        通常生成 / ランダム生成に分ける
-        ================================================== */
+
+        if (error) {
+
+        console.error(error);
+
+        normalArea.innerHTML = `
+        <div class="empty">
+        データの読み込みに失敗しました。<br>
+        ${error.message}
+        </div>
+        `;
+
+        randomArea.innerHTML = "";
+
+        return;
+
+        }
+
+
+        normalArea.innerHTML = "";
+        randomArea.innerHTML = "";
+
 
         let normalCount = 0;
-
         let randomCount = 0;
 
 
-
-        sortedPeople.forEach(
+        data.forEach(
         function(person) {
-
 
         const card =
         createPersonCard(
         person
         );
 
-
-        /* ==========================================
-        ランダム生成
-        ========================================== */
 
         if (
         person.random === true
@@ -662,22 +600,15 @@
         card
         );
 
-
         randomCount++;
 
         }
-
-
-        /* ==========================================
-        通常生成
-        ========================================== */
 
         else {
 
         normalArea.appendChild(
         card
         );
-
 
         normalCount++;
 
@@ -687,27 +618,17 @@
         );
 
 
-
-        /* ==================================================
-        人物がいない場合
-        ================================================== */
-
         if (
         normalCount === 0
         ) {
 
         normalArea.innerHTML = `
-
         <div class="empty">
-
         まだ通常生成された人物はいません。
-
         </div>
-
         `;
 
         }
-
 
 
         if (
@@ -715,17 +636,14 @@
         ) {
 
         randomArea.innerHTML = `
-
         <div class="empty">
-
         まだランダム生成された人物はいません。
-
         </div>
-
         `;
 
         }
 
+        }
 
 
         /* ==================================================
@@ -742,16 +660,9 @@
         deleteAllButton
         ) {
 
-
         deleteAllButton.addEventListener(
         "click",
-
-        function() {
-
-
-        /* ======================================
-        パスワード
-        ====================================== */
+        async function() {
 
         const correctPassword =
         "1234";
@@ -763,10 +674,6 @@
         );
 
 
-        /* ======================================
-        キャンセル
-        ====================================== */
-
         if (
         password === null
         ) {
@@ -775,11 +682,6 @@
 
         }
 
-
-
-        /* ======================================
-        パスワード確認
-        ====================================== */
 
         if (
         password.trim()
@@ -791,16 +693,10 @@
         "パスワードが違います。"
         );
 
-
         return;
 
         }
 
-
-
-        /* ======================================
-        最終確認
-        ====================================== */
 
         const confirmed =
         confirm(
@@ -817,35 +713,34 @@
         }
 
 
-
-        /* ======================================
-        データ削除
-        ====================================== */
-
-        localStorage.removeItem(
-        "lifeModifiers"
+        const { error } =
+        await db
+        .from("people")
+        .delete()
+        .gte(
+        "id",
+        0
         );
 
 
-        localStorage.removeItem(
-        "selectedPerson"
+        if (error) {
+
+        console.error(error);
+
+        alert(
+        "データの削除に失敗しました。\n" +
+        error.message
         );
 
+        return;
 
+        }
 
-        /* ======================================
-        確認
-        ====================================== */
 
         alert(
         "すべての人物データを削除しました。"
         );
 
-
-
-        /* ======================================
-        ページ更新
-        ====================================== */
 
         window.location.reload();
 
@@ -854,6 +749,12 @@
 
         }
 
+
+        /* ==================================================
+        初期表示
+        ================================================== */
+
+        loadPeople();
 
     </script>
 

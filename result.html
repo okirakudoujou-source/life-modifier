@@ -1,3 +1,4 @@
+﻿
 <!DOCTYPE html>
 <html lang="ja">
 
@@ -325,6 +326,7 @@
         }
     </style>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 
@@ -570,21 +572,25 @@
 
     <script>
 
-
         /* ==================================================
-        選択された人物を取得
+        Supabase
         ================================================== */
 
-        const person =
-        JSON.parse(
-        localStorage.getItem(
-        "selectedPerson"
-        )
+        const SUPABASE_URL =
+        "https://lktkcaicxkelczdmtbwm.supabase.co";
+
+        const SUPABASE_KEY =
+        "sb_publishable_ok4J9vo7cyId75h7rl0-yg_LqqjVhRV";
+
+        const db =
+        window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
         );
 
 
         /* ==================================================
-        HTML要素
+        HTML
         ================================================== */
 
         const nameArea =
@@ -592,18 +598,15 @@
         "personName"
         );
 
-
         const modeArea =
         document.getElementById(
         "mode"
         );
 
-
         const totalArea =
         document.getElementById(
         "total"
         );
-
 
         const talentArea =
         document.getElementById(
@@ -611,94 +614,60 @@
         );
 
 
-        /* ==================================================
-        カテゴリー要素
-        ================================================== */
-
         const categoryAreas = {
 
         brain: {
 
         buff:
-        document.getElementById(
-        "brainBuff"
-        ),
+        document.getElementById("brainBuff"),
 
         debuff:
-        document.getElementById(
-        "brainDebuff"
-        ),
+        document.getElementById("brainDebuff"),
 
         neutral:
-        document.getElementById(
-        "brainNeutral"
-        )
+        document.getElementById("brainNeutral")
 
         },
-
 
         body: {
 
         buff:
-        document.getElementById(
-        "bodyBuff"
-        ),
+        document.getElementById("bodyBuff"),
 
         debuff:
-        document.getElementById(
-        "bodyDebuff"
-        ),
+        document.getElementById("bodyDebuff"),
 
         neutral:
-        document.getElementById(
-        "bodyNeutral"
-        )
+        document.getElementById("bodyNeutral")
 
         },
-
 
         look: {
 
         buff:
-        document.getElementById(
-        "lookBuff"
-        ),
+        document.getElementById("lookBuff"),
 
         debuff:
-        document.getElementById(
-        "lookDebuff"
-        ),
+        document.getElementById("lookDebuff"),
 
         neutral:
-        document.getElementById(
-        "lookNeutral"
-        )
+        document.getElementById("lookNeutral")
 
         }
 
         };
 
 
-        /* ==================================================
-        セクション要素
-        ================================================== */
-
         const categorySections = {
 
         brain:
-        document.getElementById(
-        "brainSection"
-        ),
+        document.getElementById("brainSection"),
 
         body:
-        document.getElementById(
-        "bodySection"
-        ),
+        document.getElementById("bodySection"),
 
         look:
-        document.getElementById(
-        "lookSection"
-        )
+        document.getElementById("lookSection")
 
         };
 
@@ -708,59 +677,39 @@
         brain: {
 
         buff:
-        document.getElementById(
-        "brainBuffSection"
-        ),
+        document.getElementById("brainBuffSection"),
 
         debuff:
-        document.getElementById(
-        "brainDebuffSection"
-        ),
+        document.getElementById("brainDebuffSection"),
 
         neutral:
-        document.getElementById(
-        "brainNeutralSection"
-        )
+        document.getElementById("brainNeutralSection")
 
         },
-
 
         body: {
 
         buff:
-        document.getElementById(
-        "bodyBuffSection"
-        ),
+        document.getElementById("bodyBuffSection"),
 
         debuff:
-        document.getElementById(
-        "bodyDebuffSection"
-        ),
+        document.getElementById("bodyDebuffSection"),
 
         neutral:
-        document.getElementById(
-        "bodyNeutralSection"
-        )
+        document.getElementById("bodyNeutralSection")
 
         },
-
 
         look: {
 
         buff:
-        document.getElementById(
-        "lookBuffSection"
-        ),
+        document.getElementById("lookBuffSection"),
 
         debuff:
-        document.getElementById(
-        "lookDebuffSection"
-        ),
+        document.getElementById("lookDebuffSection"),
 
         neutral:
-        document.getElementById(
-        "lookNeutralSection"
-        )
+        document.getElementById("lookNeutralSection")
 
         }
 
@@ -768,292 +717,31 @@
 
 
         /* ==================================================
-        人物が存在しない場合
+        文字列をHTMLに安全に入れる
         ================================================== */
 
-        if (!person) {
+        function escapeHtml(value) {
 
-        nameArea.textContent =
-        "人物が見つかりません";
-
-
-        modeArea.style.display =
-        "none";
-
-
-        totalArea.style.display =
-        "none";
-
-
-        talentArea.style.display =
-        "none";
-
-
-        Object.values(
-        categorySections
-        ).forEach(
-        function(section) {
-
-        section.style.display =
-        "none";
-
-        }
-        );
+        return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
         }
 
 
         /* ==================================================
-        人物が存在する場合
-        ================================================== */
-
-        else {
-
-
-        /* ==============================================
-        名前
-        ============================================== */
-
-        nameArea.textContent =
-        person.name;
-
-
-        /* ==============================================
-        通常生成 / ランダム生成
-        ============================================== */
-
-        if (
-        person.random === true
-        ) {
-
-        modeArea.textContent =
-        "ランダム生成";
-
-        }
-
-        else {
-
-        modeArea.textContent =
-        "通常生成";
-
-        }
-
-
-        /* ==============================================
-        合計値を計算
-        ============================================== */
-
-        let total = 0;
-
-
-        if (
-        Array.isArray(
-        person.modifiers
-        )
-        ) {
-
-        person.modifiers.forEach(
-        function(modifier) {
-
-        total +=
-        Number(
-        modifier.score
-        ) || 0;
-
-        }
-        );
-
-        }
-
-
-        /* ==============================================
-        合計値の色
-
-        マイナス = 緑
-        プラス   = 赤
-        0        = 灰色
-        ============================================== */
-
-        let totalClass;
-
-
-        if (
-        total < 0
-        ) {
-
-        totalClass =
-        "positive";
-
-        }
-
-        else if (
-        total > 0
-        ) {
-
-        totalClass =
-        "negative";
-
-        }
-
-        else {
-
-        totalClass =
-        "zero";
-
-        }
-
-
-        /* ==============================================
-        プラス記号
-        ============================================== */
-
-        const totalSign =
-        total > 0
-        ? "+"
-        : "";
-
-
-        /* ==============================================
-        合計表示
-        ============================================== */
-
-        totalArea.innerHTML = `
-
-        合計：
-
-        <span class="${totalClass}">
-        ${totalSign}${total}
-        </span>
-
-        `;
-
-
-        /* ==============================================
-        天才の才能
-        ============================================== */
-
-        if (
-        person.talent
-        ) {
-
-        talentArea.innerHTML = `
-
-        <div class="talent-title">
-        天才の才能
-        </div>
-
-        <div class="talent-name">
-        ${person.talent.name}
-        </div>
-
-        <div class="talent-description">
-        ${person.talent.description}
-        </div>
-
-        `;
-
-
-        talentArea.style.display =
-        "block";
-
-        }
-
-        else {
-
-        talentArea.style.display =
-        "none";
-
-        }
-
-
-        /* ==============================================
-        モディファイアがない場合
-        ============================================== */
-
-        if (
-        !Array.isArray(
-        person.modifiers
-        )
-        ||
-        person.modifiers.length === 0
-        ) {
-
-        Object.values(
-        categorySections
-        ).forEach(
-        function(section) {
-
-        section.style.display =
-        "none";
-
-        }
-        );
-
-        }
-
-        else {
-
-
-        /* ==========================================
-        各カテゴリーへ振り分ける
-        ========================================== */
-
-        const categorized = {
-
-        brain: {
-
-        buff: [],
-        debuff: [],
-        neutral: []
-
-        },
-
-
-        body: {
-
-        buff: [],
-        debuff: [],
-        neutral: []
-
-        },
-
-
-        look: {
-
-        buff: [],
-        debuff: [],
-        neutral: []
-
-        }
-
-        };
-
-
-        /* ==========================================
         カテゴリー判定
+        ================================================== */
 
-        新しいデータ
-        ↓
-        modifier.category を使用
-
-        古いデータ
-        ↓
-        名前から判定
-        ========================================== */
-
-        function getCategory(
-        modifier
-        ) {
+        function getCategory(modifier) {
 
         if (
-        modifier.category ===
-        "brain"
-        ||
-        modifier.category ===
-        "body"
-        ||
-        modifier.category ===
-        "look"
+        modifier.category === "brain" ||
+        modifier.category === "body" ||
+        modifier.category === "look"
         ) {
 
         return modifier.category;
@@ -1064,10 +752,6 @@
         const name =
         modifier.name;
 
-
-        /* ==================================
-        頭脳
-        ================================== */
 
         const brainNames = [
 
@@ -1082,25 +766,25 @@
         "器用",
         "不器用",
         "コミュ強",
-        "コミュ障"
+        "コミュ障",
+        "優れた学習能力",
+        "劣った学習能力",
+        "幸運",
+        "豪運",
+        "不運",
+        "凶運"
 
         ];
 
 
         if (
-        brainNames.includes(
-        name
-        )
+        brainNames.includes(name)
         ) {
 
         return "brain";
 
         }
 
-
-        /* ==================================
-        ルックス
-        ================================== */
 
         const lookNames = [
 
@@ -1131,9 +815,7 @@
 
 
         if (
-        lookNames.includes(
-        name
-        )
+        lookNames.includes(name)
         ) {
 
         return "look";
@@ -1141,22 +823,241 @@
         }
 
 
-        /* ==================================
-        それ以外は身体
-        ================================== */
-
         return "body";
 
         }
 
 
-        /* ==========================================
-        BUFF / DEBUFF / NEUTRAL 判定
-        ========================================== */
+        /* ==================================================
+        モディファイアカード
+        ================================================== */
+
+        function createModifierCard(modifier) {
+
+        const element =
+        document.createElement("div");
+
+        element.className =
+        "modifier";
+
+
+        const score =
+        Number(modifier.score) || 0;
+
+
+        let scoreClass;
+
+
+        if (score < 0) {
+
+        scoreClass =
+        "positive";
+
+        }
+
+        else if (score > 0) {
+
+        scoreClass =
+        "negative";
+
+        }
+
+        else {
+
+        scoreClass =
+        "zero";
+
+        }
+
+
+        const sign =
+        score > 0
+        ? "+"
+        : "";
+
+
+        element.innerHTML = `
+
+        <div class="header">
+
+        <div class="name">
+        ${escapeHtml(modifier.name)}
+        </div>
+
+        <div
+        class="score ${scoreClass}">
+
+        ${sign}${score}
+
+        </div>
+
+        </div>
+
+        <div class="description">
+        ${escapeHtml(modifier.description || "")}
+        </div>
+
+        `;
+
+
+        return element;
+
+        }
+
+
+        /* ==================================================
+        人物を表示
+        ================================================== */
+
+        function displayPerson(person) {
+
+        nameArea.textContent =
+        person.name || "人物";
+
+
+        modeArea.textContent =
+        person.random === true
+        ? "ランダム生成"
+        : "通常生成";
+
+
+        let total = 0;
+
+
+        if (
+        Array.isArray(person.modifiers)
+        ) {
 
         person.modifiers.forEach(
         function(modifier) {
 
+        total +=
+        Number(
+        modifier.score
+        ) || 0;
+
+        }
+        );
+
+        }
+
+
+        let totalClass;
+
+
+        if (total < 0) {
+
+        totalClass =
+        "positive";
+
+        }
+
+        else if (total > 0) {
+
+        totalClass =
+        "negative";
+
+        }
+
+        else {
+
+        totalClass =
+        "zero";
+
+        }
+
+
+        const totalSign =
+        total > 0
+        ? "+"
+        : "";
+
+
+        totalArea.innerHTML = `
+        合計：
+        <span class="${totalClass}">
+        ${totalSign}${total}
+        </span>
+        `;
+
+
+        if (person.talent) {
+
+        talentArea.innerHTML = `
+
+        <div class="talent-title">
+        天才の才能
+        </div>
+
+        <div class="talent-name">
+        ${escapeHtml(person.talent.name)}
+        </div>
+
+        <div class="talent-description">
+        ${escapeHtml(person.talent.description)}
+        </div>
+
+        `;
+
+        talentArea.style.display =
+        "block";
+
+        }
+
+        else {
+
+        talentArea.style.display =
+        "none";
+
+        }
+
+
+        if (
+        !Array.isArray(person.modifiers) ||
+        person.modifiers.length === 0
+        ) {
+
+        Object.values(
+        categorySections
+        ).forEach(
+        function(section) {
+
+        section.style.display =
+        "none";
+
+        }
+        );
+
+        return;
+
+        }
+
+
+        const categorized = {
+
+        brain: {
+        buff: [],
+        debuff: [],
+        neutral: []
+        },
+
+        body: {
+        buff: [],
+        debuff: [],
+        neutral: []
+        },
+
+        look: {
+        buff: [],
+        debuff: [],
+        neutral: []
+        }
+
+        };
+
+
+        person.modifiers.forEach(
+        function(modifier) {
 
         const category =
         getCategory(
@@ -1167,21 +1068,19 @@
         let type;
 
 
-        if (
+        const score =
         Number(
         modifier.score
-        ) < 0
-        ) {
+        ) || 0;
+
+
+        if (score < 0) {
 
         type = "buff";
 
         }
 
-        else if (
-        Number(
-        modifier.score
-        ) > 0
-        ) {
+        else if (score > 0) {
 
         type = "debuff";
 
@@ -1206,27 +1105,9 @@
         );
 
 
-        /* ==========================================
-        数値の大きい順に並べる
-
-        例：
-
-        +8
-        +5
-        +3
-        +1
-
-        または
-
-        -1
-        -2
-        -3
-        -6
-        -12
-
-        JavaScript上の数値として
-        大きい順に並べる。
-        ========================================== */
+        /* ==================================================
+        数値の大きい順
+        ================================================== */
 
         Object.keys(
         categorized
@@ -1234,181 +1115,61 @@
         function(category) {
 
         Object.keys(
-        categorized[
-        category
-        ]
+        categorized[category]
         ).forEach(
         function(type) {
 
-        categorized[
-        category
-        ][
-        type
-        ].sort(
+        categorized[category][type].sort(
         function(a, b) {
 
         return (
-        Number(
-        a.score
-        )
-        -
-        Number(
-        b.score
-        )
+        Number(b.score) -
+        Number(a.score)
         );
 
         }
         );
 
         }
+
         );
 
         }
         );
 
-
-        /* ==========================================
-        カード作成
-        ========================================== */
-
-        function createModifierCard(
-        modifier
-        ) {
-
-
-        const element =
-        document.createElement(
-        "div"
-        );
-
-
-        element.className =
-        "modifier";
-
-
-        /* ==================================
-        数値の色
-        ================================== */
-
-        let scoreClass;
-
-
-        if (
-        Number(
-        modifier.score
-        ) < 0
-        ) {
-
-        scoreClass =
-        "positive";
-
-        }
-
-        else if (
-        Number(
-        modifier.score
-        ) > 0
-        ) {
-
-        scoreClass =
-        "negative";
-
-        }
-
-        else {
-
-        scoreClass =
-        "zero";
-
-        }
-
-
-        /* ==================================
-        プラス記号
-        ================================== */
-
-        const sign =
-        Number(
-        modifier.score
-        ) > 0
-        ? "+"
-        : "";
-
-
-        /* ==================================
-        カード内容
-        ================================== */
-
-        element.innerHTML = `
-
-        <div class="header">
-
-        <div class="name">
-        ${modifier.name}
-        </div>
-
-        <div
-        class="score ${scoreClass}">
-
-        ${sign}${modifier.score}
-
-        </div>
-
-        </div>
-
-
-        <div class="description">
-
-        ${modifier.description || ""}
-
-        </div>
-
-        `;
-
-
-        return element;
-
-        }
-
-
-        /* ==========================================
-        各カテゴリーを表示
-        ========================================== */
 
         Object.keys(
         categorized
         ).forEach(
         function(category) {
 
-
         const categoryData =
-        categorized[
-        category
-        ];
-
+        categorized[category];
 
         let hasAny =
         false;
 
 
-        /* ==================================
-        BUFF
-        ================================== */
+        ["buff", "debuff", "neutral"]
+        .forEach(
+        function(type) {
 
-        const buffArea =
+        const area =
         categoryAreas[
         category
-        ].buff;
+        ][
+        type
+        ];
 
 
-        buffArea.innerHTML =
+        area.innerHTML =
         "";
 
 
-        categoryData.buff.forEach(
+        categoryData[type].forEach(
         function(modifier) {
 
-        buffArea.appendChild(
+        area.appendChild(
         createModifierCard(
         modifier
         )
@@ -1419,13 +1180,14 @@
 
 
         if (
-        categoryData.buff.length
-        === 0
+        categoryData[type].length === 0
         ) {
 
         typeSections[
         category
-        ].buff.style.display =
+        ][
+        type
+        ].style.display =
         "none";
 
         }
@@ -1434,147 +1196,133 @@
 
         typeSections[
         category
-        ].buff.style.display =
+        ][
+        type
+        ].style.display =
         "block";
 
         hasAny = true;
 
         }
 
-
-        /* ==================================
-        DEBUFF
-        ================================== */
-
-        const debuffArea =
-        categoryAreas[
-        category
-        ].debuff;
-
-
-        debuffArea.innerHTML =
-        "";
-
-
-        categoryData.debuff.forEach(
-        function(modifier) {
-
-        debuffArea.appendChild(
-        createModifierCard(
-        modifier
-        )
-        );
-
         }
         );
 
 
-        if (
-        categoryData.debuff.length
-        === 0
-        ) {
-
-        typeSections[
+        categorySections[
         category
-        ].debuff.style.display =
-        "none";
-
-        }
-
-        else {
-
-        typeSections[
-        category
-        ].debuff.style.display =
-        "block";
-
-        hasAny = true;
-
-        }
-
-
-        /* ==================================
-        NEUTRAL
-        ================================== */
-
-        const neutralArea =
-        categoryAreas[
-        category
-        ].neutral;
-
-
-        neutralArea.innerHTML =
-        "";
-
-
-        categoryData.neutral.forEach(
-        function(modifier) {
-
-        neutralArea.appendChild(
-        createModifierCard(
-        modifier
-        )
-        );
-
-        }
-        );
-
-
-        if (
-        categoryData.neutral.length
-        === 0
-        ) {
-
-        typeSections[
-        category
-        ].neutral.style.display =
-        "none";
-
-        }
-
-        else {
-
-        typeSections[
-        category
-        ].neutral.style.display =
-        "block";
-
-        hasAny = true;
-
-        }
-
-
-        /* ==================================
-        カテゴリーそのもの
-        ================================== */
-
-        if (
+        ].style.display =
         hasAny
-        ) {
-
-        categorySections[
-        category
-        ].style.display =
-        "block";
+        ? "block"
+        : "none";
 
         }
 
-        else {
-
-        categorySections[
-        category
-        ].style.display =
-        "none";
-
-        }
-
-        }
         );
 
         }
 
+
+        /* ==================================================
+        Supabaseから人物取得
+        ================================================== */
+
+        async function loadPerson() {
+
+        const params =
+        new URLSearchParams(
+        window.location.search
+        );
+
+
+        const id =
+        params.get("id");
+
+
+        if (!id) {
+
+        nameArea.textContent =
+        "人物が見つかりません";
+
+        modeArea.style.display =
+        "none";
+
+        totalArea.style.display =
+        "none";
+
+        talentArea.style.display =
+        "none";
+
+        Object.values(
+        categorySections
+        ).forEach(
+        function(section) {
+
+        section.style.display =
+        "none";
+
+        }
+        );
+
+        return;
+
         }
 
+
+        const { data, error } =
+        await db
+        .from("people")
+        .select("*")
+        .eq(
+        "id",
+        id
+        )
+        .maybeSingle();
+
+
+        if (
+        error ||
+        !data
+        ) {
+
+        console.error(error);
+
+        nameArea.textContent =
+        "人物が見つかりません";
+
+        modeArea.style.display =
+        "none";
+
+        totalArea.style.display =
+        "none";
+
+        talentArea.style.display =
+        "none";
+
+        Object.values(
+        categorySections
+        ).forEach(
+        function(section) {
+
+        section.style.display =
+        "none";
+
+        }
+        );
+
+        return;
+
+        }
+
+
+        displayPerson(
+        data
+        );
+
+        }
+
+
+        loadPerson();
 
     </script>
 
