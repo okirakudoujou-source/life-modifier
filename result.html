@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 
 <head>
@@ -26,9 +26,9 @@
 
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 40px 20px 100px;
         }
 
 
@@ -50,17 +50,15 @@
             text-align: center;
             font-size: 28px;
             font-weight: bold;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
 
         /* ========================================
            数値の色
 
-           INDEXと同じ設定
-
-           マイナス = 緑
-           プラス   = 赤
+           マイナス = BUFF = 緑
+           プラス   = DEBUFF = 赤
            0        = 灰色
         ======================================== */
 
@@ -87,7 +85,7 @@
             text-align: center;
             color: #777777;
             font-size: 12px;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
 
 
@@ -100,7 +98,7 @@
             border: 1px solid #555555;
             border-radius: 10px;
             padding: 20px;
-            margin-bottom: 25px;
+            margin-bottom: 35px;
             text-align: center;
         }
 
@@ -127,7 +125,95 @@
 
 
         /* ========================================
-           モディファイア
+           カテゴリー
+        ======================================== */
+
+        .category-section {
+            margin-bottom: 45px;
+        }
+
+
+        .category-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+            font-size: 21px;
+            font-weight: bold;
+        }
+
+
+            .category-title::after {
+                content: "";
+                flex: 1;
+                height: 1px;
+                background: #444444;
+            }
+
+
+        /* ========================================
+           カテゴリー色
+        ======================================== */
+
+        .brain-title {
+            color: #aaaaaa;
+        }
+
+
+        .body-title {
+            color: #aaaaaa;
+        }
+
+
+        .look-title {
+            color: #aaaaaa;
+        }
+
+
+        /* ========================================
+           BUFF / DEBUFF / NEUTRAL
+        ======================================== */
+
+        .type-section {
+            margin-bottom: 25px;
+        }
+
+
+        .type-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+
+        .buff-title {
+            color: #55cc77;
+        }
+
+
+        .debuff-title {
+            color: #ff5555;
+        }
+
+
+        .neutral-title {
+            color: #aaaaaa;
+        }
+
+
+        /* ========================================
+           モディファイア一覧
+        ======================================== */
+
+        .modifier-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+
+        /* ========================================
+           モディファイアカード
         ======================================== */
 
         .modifier {
@@ -135,7 +221,6 @@
             border: 1px solid #3d3d3d;
             border-radius: 10px;
             padding: 18px;
-            margin-bottom: 12px;
         }
 
 
@@ -147,6 +232,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 15px;
         }
 
 
@@ -167,6 +253,7 @@
         .score {
             font-size: 22px;
             font-weight: bold;
+            flex-shrink: 0;
         }
 
 
@@ -183,13 +270,24 @@
 
 
         /* ========================================
-           戻るボタン
+           項目がない場合
+        ======================================== */
+
+        .empty {
+            color: #555555;
+            font-size: 12px;
+            padding: 8px 0;
+        }
+
+
+        /* ========================================
+           戻る
         ======================================== */
 
         .back {
             display: block;
             text-align: center;
-            margin-top: 30px;
+            margin-top: 40px;
             color: #888888;
             text-decoration: none;
         }
@@ -198,6 +296,33 @@
             .back:hover {
                 color: #ffffff;
             }
+
+
+        /* ========================================
+           スマホ
+        ======================================== */
+
+        @media (max-width: 600px) {
+
+            .container {
+                padding: 25px 15px 80px;
+            }
+
+
+            .modifier-list {
+                grid-template-columns: 1fr;
+            }
+
+
+            #total {
+                font-size: 24px;
+            }
+
+
+            .category-title {
+                font-size: 19px;
+            }
+        }
     </style>
 
 </head>
@@ -242,10 +367,189 @@
 
 
         <!-- ========================================
-             モディファイア
+             頭脳
         ======================================== -->
 
-        <div id="modifiers"></div>
+        <section class="category-section"
+                 id="brainSection">
+
+            <div class="category-title brain-title">
+                頭脳
+            </div>
+
+
+            <!-- BUFF -->
+
+            <div class="type-section"
+                 id="brainBuffSection">
+
+                <div class="type-title buff-title">
+                    BUFF
+                </div>
+
+                <div id="brainBuff"
+                     class="modifier-list">
+                </div>
+
+            </div>
+
+
+            <!-- DEBUFF -->
+
+            <div class="type-section"
+                 id="brainDebuffSection">
+
+                <div class="type-title debuff-title">
+                    DEBUFF
+                </div>
+
+                <div id="brainDebuff"
+                     class="modifier-list">
+                </div>
+
+            </div>
+
+
+            <!-- NEUTRAL -->
+
+            <div class="type-section"
+                 id="brainNeutralSection">
+
+                <div class="type-title neutral-title">
+                    NEUTRAL
+                </div>
+
+                <div id="brainNeutral"
+                     class="modifier-list">
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================
+             身体
+        ======================================== -->
+
+        <section class="category-section"
+                 id="bodySection">
+
+            <div class="category-title body-title">
+                身体
+            </div>
+
+
+            <!-- BUFF -->
+
+            <div class="type-section"
+                 id="bodyBuffSection">
+
+                <div class="type-title buff-title">
+                    BUFF
+                </div>
+
+                <div id="bodyBuff"
+                     class="modifier-list">
+                </div>
+
+            </div>
+
+
+            <!-- DEBUFF -->
+
+            <div class="type-section"
+                 id="bodyDebuffSection">
+
+                <div class="type-title debuff-title">
+                    DEBUFF
+                </div>
+
+                <div id="bodyDebuff"
+                     class="modifier-list">
+                </div>
+
+            </div>
+
+
+            <!-- NEUTRAL -->
+
+            <div class="type-section"
+                 id="bodyNeutralSection">
+
+                <div class="type-title neutral-title">
+                    NEUTRAL
+                </div>
+
+                <div id="bodyNeutral"
+                     class="modifier-list">
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================
+             ルックス
+        ======================================== -->
+
+        <section class="category-section"
+                 id="lookSection">
+
+            <div class="category-title look-title">
+                ルックス
+            </div>
+
+
+            <!-- BUFF -->
+
+            <div class="type-section"
+                 id="lookBuffSection">
+
+                <div class="type-title buff-title">
+                    BUFF
+                </div>
+
+                <div id="lookBuff"
+                     class="modifier-list">
+                </div>
+
+            </div>
+
+
+            <!-- DEBUFF -->
+
+            <div class="type-section"
+                 id="lookDebuffSection">
+
+                <div class="type-title debuff-title">
+                    DEBUFF
+                </div>
+
+                <div id="lookDebuff"
+                     class="modifier-list">
+                </div>
+
+            </div>
+
+
+            <!-- NEUTRAL -->
+
+            <div class="type-section"
+                 id="lookNeutralSection">
+
+                <div class="type-title neutral-title">
+                    NEUTRAL
+                </div>
+
+                <div id="lookNeutral"
+                     class="modifier-list">
+                </div>
+
+            </div>
+
+        </section>
 
 
         <!-- ========================================
@@ -279,9 +583,8 @@
         );
 
 
-
         /* ==================================================
-        HTML要素を取得
+        HTML要素
         ================================================== */
 
         const nameArea =
@@ -308,11 +611,160 @@
         );
 
 
-        const modifiersArea =
-        document.getElementById(
-        "modifiers"
-        );
+        /* ==================================================
+        カテゴリー要素
+        ================================================== */
 
+        const categoryAreas = {
+
+        brain: {
+
+        buff:
+        document.getElementById(
+        "brainBuff"
+        ),
+
+        debuff:
+        document.getElementById(
+        "brainDebuff"
+        ),
+
+        neutral:
+        document.getElementById(
+        "brainNeutral"
+        )
+
+        },
+
+
+        body: {
+
+        buff:
+        document.getElementById(
+        "bodyBuff"
+        ),
+
+        debuff:
+        document.getElementById(
+        "bodyDebuff"
+        ),
+
+        neutral:
+        document.getElementById(
+        "bodyNeutral"
+        )
+
+        },
+
+
+        look: {
+
+        buff:
+        document.getElementById(
+        "lookBuff"
+        ),
+
+        debuff:
+        document.getElementById(
+        "lookDebuff"
+        ),
+
+        neutral:
+        document.getElementById(
+        "lookNeutral"
+        )
+
+        }
+
+        };
+
+
+        /* ==================================================
+        セクション要素
+        ================================================== */
+
+        const categorySections = {
+
+        brain:
+        document.getElementById(
+        "brainSection"
+        ),
+
+        body:
+        document.getElementById(
+        "bodySection"
+        ),
+
+        look:
+        document.getElementById(
+        "lookSection"
+        )
+
+        };
+
+
+        const typeSections = {
+
+        brain: {
+
+        buff:
+        document.getElementById(
+        "brainBuffSection"
+        ),
+
+        debuff:
+        document.getElementById(
+        "brainDebuffSection"
+        ),
+
+        neutral:
+        document.getElementById(
+        "brainNeutralSection"
+        )
+
+        },
+
+
+        body: {
+
+        buff:
+        document.getElementById(
+        "bodyBuffSection"
+        ),
+
+        debuff:
+        document.getElementById(
+        "bodyDebuffSection"
+        ),
+
+        neutral:
+        document.getElementById(
+        "bodyNeutralSection"
+        )
+
+        },
+
+
+        look: {
+
+        buff:
+        document.getElementById(
+        "lookBuffSection"
+        ),
+
+        debuff:
+        document.getElementById(
+        "lookDebuffSection"
+        ),
+
+        neutral:
+        document.getElementById(
+        "lookNeutralSection"
+        )
+
+        }
+
+        };
 
 
         /* ==================================================
@@ -320,7 +772,6 @@
         ================================================== */
 
         if (!person) {
-
 
         nameArea.textContent =
         "人物が見つかりません";
@@ -338,6 +789,17 @@
         "none";
 
 
+        Object.values(
+        categorySections
+        ).forEach(
+        function(section) {
+
+        section.style.display =
+        "none";
+
+        }
+        );
+
         }
 
 
@@ -354,7 +816,6 @@
 
         nameArea.textContent =
         person.name;
-
 
 
         /* ==============================================
@@ -378,12 +839,8 @@
         }
 
 
-
         /* ==============================================
         合計値を計算
-
-        保存されているtotalではなく、
-        保存されているモディファイアから再計算
         ============================================== */
 
         let total = 0;
@@ -395,22 +852,18 @@
         )
         ) {
 
-
         person.modifiers.forEach(
         function(modifier) {
-
 
         total +=
         Number(
         modifier.score
         ) || 0;
 
-
         }
         );
 
         }
-
 
 
         /* ==============================================
@@ -450,7 +903,6 @@
         }
 
 
-
         /* ==============================================
         プラス記号
         ============================================== */
@@ -459,7 +911,6 @@
         total > 0
         ? "+"
         : "";
-
 
 
         /* ==============================================
@@ -471,13 +922,10 @@
         合計：
 
         <span class="${totalClass}">
-
         ${totalSign}${total}
-
         </span>
 
         `;
-
 
 
         /* ==============================================
@@ -487,7 +935,6 @@
         if (
         person.talent
         ) {
-
 
         talentArea.innerHTML = `
 
@@ -513,32 +960,321 @@
 
         else {
 
-
         talentArea.style.display =
         "none";
 
         }
 
 
-
         /* ==============================================
-        モディファイア
+        モディファイアがない場合
         ============================================== */
 
         if (
-        Array.isArray(
+        !Array.isArray(
         person.modifiers
+        )
+        ||
+        person.modifiers.length === 0
+        ) {
+
+        Object.values(
+        categorySections
+        ).forEach(
+        function(section) {
+
+        section.style.display =
+        "none";
+
+        }
+        );
+
+        }
+
+        else {
+
+
+        /* ==========================================
+        各カテゴリーへ振り分ける
+        ========================================== */
+
+        const categorized = {
+
+        brain: {
+
+        buff: [],
+        debuff: [],
+        neutral: []
+
+        },
+
+
+        body: {
+
+        buff: [],
+        debuff: [],
+        neutral: []
+
+        },
+
+
+        look: {
+
+        buff: [],
+        debuff: [],
+        neutral: []
+
+        }
+
+        };
+
+
+        /* ==========================================
+        カテゴリー判定
+
+        新しいデータ
+        ↓
+        modifier.category を使用
+
+        古いデータ
+        ↓
+        名前から判定
+        ========================================== */
+
+        function getCategory(
+        modifier
+        ) {
+
+        if (
+        modifier.category ===
+        "brain"
+        ||
+        modifier.category ===
+        "body"
+        ||
+        modifier.category ===
+        "look"
+        ) {
+
+        return modifier.category;
+
+        }
+
+
+        const name =
+        modifier.name;
+
+
+        /* ==================================
+        頭脳
+        ================================== */
+
+        const brainNames = [
+
+        "高IQ",
+        "ギフテッド",
+        "天才",
+        "知的障害",
+        "記憶力抜群",
+        "物覚えが悪い",
+        "要領良し",
+        "要領が悪い",
+        "器用",
+        "不器用",
+        "コミュ強",
+        "コミュ障"
+
+        ];
+
+
+        if (
+        brainNames.includes(
+        name
         )
         ) {
 
+        return "brain";
+
+        }
+
+
+        /* ==================================
+        ルックス
+        ================================== */
+
+        const lookNames = [
+
+        "美形",
+        "ものすごく美形",
+        "醜い",
+        "ものすごく醜い",
+        "ふさふさ",
+        "高身長",
+        "低身長",
+        "小顔",
+        "歯並び良好",
+        "歯並びが悪い",
+        "肌が強い",
+        "肌が弱い",
+        "汗をかきにくい",
+        "汗っかき",
+        "無臭体質",
+        "体臭が強い",
+        "口臭が出やすい",
+        "虫歯耐性",
+        "清潔感〇",
+        "不潔体質",
+        "男",
+        "女"
+
+        ];
+
+
+        if (
+        lookNames.includes(
+        name
+        )
+        ) {
+
+        return "look";
+
+        }
+
+
+        /* ==================================
+        それ以外は身体
+        ================================== */
+
+        return "body";
+
+        }
+
+
+        /* ==========================================
+        BUFF / DEBUFF / NEUTRAL 判定
+        ========================================== */
 
         person.modifiers.forEach(
         function(modifier) {
 
 
-        /* ==================================
+        const category =
+        getCategory(
+        modifier
+        );
+
+
+        let type;
+
+
+        if (
+        Number(
+        modifier.score
+        ) < 0
+        ) {
+
+        type = "buff";
+
+        }
+
+        else if (
+        Number(
+        modifier.score
+        ) > 0
+        ) {
+
+        type = "debuff";
+
+        }
+
+        else {
+
+        type = "neutral";
+
+        }
+
+
+        categorized[
+        category
+        ][
+        type
+        ].push(
+        modifier
+        );
+
+        }
+        );
+
+
+        /* ==========================================
+        数値の大きい順に並べる
+
+        例：
+
+        +8
+        +5
+        +3
+        +1
+
+        または
+
+        -1
+        -2
+        -3
+        -6
+        -12
+
+        JavaScript上の数値として
+        大きい順に並べる。
+        ========================================== */
+
+        Object.keys(
+        categorized
+        ).forEach(
+        function(category) {
+
+        Object.keys(
+        categorized[
+        category
+        ]
+        ).forEach(
+        function(type) {
+
+        categorized[
+        category
+        ][
+        type
+        ].sort(
+        function(a, b) {
+
+        return (
+        Number(
+        a.score
+        )
+        -
+        Number(
+        b.score
+        )
+        );
+
+        }
+        );
+
+        }
+        );
+
+        }
+        );
+
+
+        /* ==========================================
         カード作成
-        ================================== */
+        ========================================== */
+
+        function createModifierCard(
+        modifier
+        ) {
+
 
         const element =
         document.createElement(
@@ -550,22 +1286,17 @@
         "modifier";
 
 
-
         /* ==================================
         数値の色
-
-        INDEXと完全に同じ
-
-        マイナス = 緑
-        プラス   = 赤
-        0        = 灰色
         ================================== */
 
         let scoreClass;
 
 
         if (
-        modifier.score < 0
+        Number(
+        modifier.score
+        ) < 0
         ) {
 
         scoreClass =
@@ -574,7 +1305,9 @@
         }
 
         else if (
-        modifier.score > 0
+        Number(
+        modifier.score
+        ) > 0
         ) {
 
         scoreClass =
@@ -590,16 +1323,16 @@
         }
 
 
-
         /* ==================================
         プラス記号
         ================================== */
 
         const sign =
-        modifier.score > 0
+        Number(
+        modifier.score
+        ) > 0
         ? "+"
         : "";
-
 
 
         /* ==================================
@@ -611,11 +1344,8 @@
         <div class="header">
 
         <div class="name">
-
         ${modifier.name}
-
         </div>
-
 
         <div
         class="score ${scoreClass}">
@@ -629,28 +1359,219 @@
 
         <div class="description">
 
-        ${modifier.description}
+        ${modifier.description || ""}
 
         </div>
 
         `;
 
 
+        return element;
+
+        }
+
+
+        /* ==========================================
+        各カテゴリーを表示
+        ========================================== */
+
+        Object.keys(
+        categorized
+        ).forEach(
+        function(category) {
+
+
+        const categoryData =
+        categorized[
+        category
+        ];
+
+
+        let hasAny =
+        false;
+
 
         /* ==================================
-        画面に追加
+        BUFF
         ================================== */
 
-        modifiersArea.appendChild(
-        element
+        const buffArea =
+        categoryAreas[
+        category
+        ].buff;
+
+
+        buffArea.innerHTML =
+        "";
+
+
+        categoryData.buff.forEach(
+        function(modifier) {
+
+        buffArea.appendChild(
+        createModifierCard(
+        modifier
+        )
         );
 
+        }
+        );
+
+
+        if (
+        categoryData.buff.length
+        === 0
+        ) {
+
+        typeSections[
+        category
+        ].buff.style.display =
+        "none";
+
+        }
+
+        else {
+
+        typeSections[
+        category
+        ].buff.style.display =
+        "block";
+
+        hasAny = true;
+
+        }
+
+
+        /* ==================================
+        DEBUFF
+        ================================== */
+
+        const debuffArea =
+        categoryAreas[
+        category
+        ].debuff;
+
+
+        debuffArea.innerHTML =
+        "";
+
+
+        categoryData.debuff.forEach(
+        function(modifier) {
+
+        debuffArea.appendChild(
+        createModifierCard(
+        modifier
+        )
+        );
+
+        }
+        );
+
+
+        if (
+        categoryData.debuff.length
+        === 0
+        ) {
+
+        typeSections[
+        category
+        ].debuff.style.display =
+        "none";
+
+        }
+
+        else {
+
+        typeSections[
+        category
+        ].debuff.style.display =
+        "block";
+
+        hasAny = true;
+
+        }
+
+
+        /* ==================================
+        NEUTRAL
+        ================================== */
+
+        const neutralArea =
+        categoryAreas[
+        category
+        ].neutral;
+
+
+        neutralArea.innerHTML =
+        "";
+
+
+        categoryData.neutral.forEach(
+        function(modifier) {
+
+        neutralArea.appendChild(
+        createModifierCard(
+        modifier
+        )
+        );
+
+        }
+        );
+
+
+        if (
+        categoryData.neutral.length
+        === 0
+        ) {
+
+        typeSections[
+        category
+        ].neutral.style.display =
+        "none";
+
+        }
+
+        else {
+
+        typeSections[
+        category
+        ].neutral.style.display =
+        "block";
+
+        hasAny = true;
+
+        }
+
+
+        /* ==================================
+        カテゴリーそのもの
+        ================================== */
+
+        if (
+        hasAny
+        ) {
+
+        categorySections[
+        category
+        ].style.display =
+        "block";
+
+        }
+
+        else {
+
+        categorySections[
+        category
+        ].style.display =
+        "none";
+
+        }
 
         }
         );
 
         }
-
 
         }
 
