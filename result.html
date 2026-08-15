@@ -1,4 +1,5 @@
-﻿
+
+
 <!DOCTYPE html>
 <html lang="ja">
 
@@ -967,6 +968,12 @@
         }
 
 
+        /* ======================================
+           通常生成 / ランダム生成
+        ====================================== */
+
+        if (person.random === true) {
+
         const totalSign =
         total > 0
         ? "+"
@@ -979,6 +986,25 @@
         ${totalSign}${total}
         </span>
         `;
+
+        }
+
+        else {
+
+        const modifierCount =
+        Array.isArray(person.modifiers)
+        ? person.modifiers.length
+        : 0;
+
+
+        totalArea.innerHTML = `
+        選択項目：
+        <span class="zero">
+        ${modifierCount}個
+        </span>
+        `;
+
+        }
 
 
         if (person.talent) {
