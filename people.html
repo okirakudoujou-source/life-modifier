@@ -1,4 +1,4 @@
-
+﻿
 <!DOCTYPE html>
 <html lang="ja">
 
@@ -247,45 +247,9 @@
                 background: #4a2525;
                 color: #dd7777;
             }
-
-
-        /* ========================================
-           個別削除ボタン
-        ======================================== */
-
-        #deleteIndividual {
-            background: #292929;
-            color: #888888;
-            border: 1px solid #3d3d3d;
-            border-radius: 6px;
-            padding: 10px 15px;
-            cursor: pointer;
-            font-size: 12px;
-            margin-left: 8px;
-        }
-
-
-            #deleteIndividual:hover {
-                background: #333333;
-                color: #aaaaaa;
-                border-color: #555555;
-            }
-
-
-        #deleteIndividual.delete-mode {
-            background: #351f1f;
-            color: #cc7777;
-            border-color: #4a2929;
-        }
-
-
-            #deleteIndividual.delete-mode:hover {
-                background: #4a2525;
-                color: #dd7777;
-            }
     </style>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 
@@ -368,13 +332,6 @@
                 <button id="deleteAll">
 
                     登録データをすべて削除
-
-                </button>
-
-
-                <button id="deleteIndividual">
-
-                    個別削除
 
                 </button>
 
@@ -561,115 +518,7 @@
 
 
         element.onclick =
-        async function() {
-
-        /*
-        * 個別削除モード
-        */
-
-        if (individualDeleteMode) {
-
-        const confirmed =
-        confirm(
-        "「" +
-        person.name +
-        "」を削除しますか？"
-        );
-
-
-        if (!confirmed) {
-
-        return;
-
-        }
-
-
-        const correctPassword =
-        "1234";
-
-
-        const password =
-        prompt(
-        "管理パスワードを入力してください"
-        );
-
-
-        if (password === null) {
-
-        return;
-
-        }
-
-
-        if (
-        password.trim()
-        !==
-        correctPassword
-        ) {
-
-        alert(
-        "パスワードが違います。"
-        );
-
-        return;
-
-        }
-
-
-        const { error } =
-        await db
-        .from("people")
-        .delete()
-        .eq(
-        "id",
-        person.id
-        );
-
-
-        if (error) {
-
-        console.error(error);
-
-        alert(
-        "削除に失敗しました。\n" +
-        error.message
-        );
-
-        return;
-
-        }
-
-
-        alert(
-        "「" +
-        person.name +
-        "」を削除しました。"
-        );
-
-
-        individualDeleteMode =
-        false;
-
-
-        deleteIndividualButton.textContent =
-        "個別削除";
-
-
-        deleteIndividualButton.classList.remove(
-        "delete-mode"
-        );
-
-
-        loadPeople();
-
-        return;
-
-        }
-
-
-        /*
-        * 通常時は結果画面へ
-        */
+        function() {
 
         window.location.href =
         "result.html?id=" +
@@ -894,64 +743,6 @@
 
 
         window.location.reload();
-
-        }
-        );
-
-        }
-
-
-        /* ==================================================
-        個別削除モード
-        ================================================== */
-
-        const deleteIndividualButton =
-        document.getElementById(
-        "deleteIndividual"
-        );
-
-
-        let individualDeleteMode =
-        false;
-
-
-        if (
-        deleteIndividualButton
-        ) {
-
-        deleteIndividualButton.addEventListener(
-        "click",
-        function() {
-
-        individualDeleteMode =
-        !individualDeleteMode;
-
-
-        if (individualDeleteMode) {
-
-        deleteIndividualButton.textContent =
-        "個別削除を終了";
-
-        deleteIndividualButton.classList.add(
-        "delete-mode"
-        );
-
-        alert(
-        "削除したい人物をクリックしてください。"
-        );
-
-        }
-
-        else {
-
-        deleteIndividualButton.textContent =
-        "個別削除";
-
-        deleteIndividualButton.classList.remove(
-        "delete-mode"
-        );
-
-        }
 
         }
         );
